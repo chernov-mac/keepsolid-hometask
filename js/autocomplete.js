@@ -139,7 +139,7 @@ class Autocomplete {
 
     clearDialog() {
         this.dialog.innerHTML = '';
-        this.fc.classList.remove('red');
+        this.fc.classList.remove('error');
     }
 
     setDialogList() {
@@ -157,7 +157,7 @@ class Autocomplete {
 
     match(str) {
         str = str.toLowerCase();
-        this.fc.classList.remove('red');
+        this.fc.classList.remove('error');
         this.clearDialog();
 
         var count = 0;
@@ -194,7 +194,7 @@ class Autocomplete {
             if (count >= this.limit) break;
         }
         if (count === 0) {
-            this.fc.classList.add('red');
+            this.fc.classList.add('error');
 
             let elem = document.createElement('div');
             elem.classList.add('error');
