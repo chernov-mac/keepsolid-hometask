@@ -4,8 +4,6 @@
     For KeepSolid Summer Internship 2017
 */
 
-'use strict';
-
 class Autocomplete {
 
     constructor(options) {
@@ -61,68 +59,6 @@ class Autocomplete {
 
         this.initHandlers();
 
-        var _ = this;
-
-        _.input.addEventListener('click', function(){
-            _.ac.classList.add('active');
-            _.dialog.classList.add('open');
-        });
-
-        _.input.addEventListener('keyup', function(e){
-            _.close.classList.add('visible');
-            if (this.value.length >= _.symbolsToStart) {
-                if(e.keyCode != 38 && e.keyCode != 40) {
-                    _.match(this.value);
-                }
-            } else {
-                _.close.classList.remove('visible');
-                _.setDialogList();
-            }
-        });
-
-        _.close.addEventListener('click', function(){
-            _.setDialogList();
-
-            _.close.classList.remove('visible');
-            _.ac.classList.add('active');
-            _.dialog.classList.add('open');
-
-
-            _.input.value = '';
-            _.input.focus();
-        });
-
-        document.body.addEventListener('click', function(e){
-            event = event || window.event;
-
-            if (event.target !== _.input) {
-                _.ac.classList.remove('active');
-                _.dialog.classList.remove('open');
-            }
-
-            if (event.target.classList.contains('option') && _.dialog.contains(document.activeElement)) {
-                _.selectOption(event.target.getAttribute('data-val'));
-            }
-        });
-
-        document.addEventListener('keyup', function(e){
-            switch (e.keyCode) {
-                case 38: // if the UP key is pressed
-                    if (document.activeElement == _.input || document.activeElement == _.dialog.firstChild) { _.input.focus(); }
-                    else if (_.dialog.contains(document.activeElement)) { document.activeElement.previousSibling.focus(); }
-                    break;
-                case 40: // if the DOWN key is pressed
-                    if (document.activeElement == _.input) { _.dialog.firstChild.focus(); }
-                    else if (document.activeElement == _.dialog.lastChild) { break; }
-                    else if (_.dialog.contains(document.activeElement)) { document.activeElement.nextSibling.focus(); }
-                    break;
-                case 13: // if the ENTER key is pressed
-                    if (_.dialog.contains(document.activeElement)) {
-                        _.selectOption(document.activeElement.getAttribute('data-val'));
-                    }
-                    break;
-            }
-        });
     }
 
     getDataByURL(url) {
@@ -214,12 +150,69 @@ class Autocomplete {
     }
 
     initHandlers() {
-        console.log('allo!');
         this.input.addEventListener('focus', this.onInputFocus.bind(this));
+        this.input.addEventListener('keyup', this.onInput.bind(this));
+        this.close.addEventListener('click', this.onClose.bind(this));
+        document.addEventListener('keyup', this.onKeyPress.bind(this));
+        document.addEventListener('click', this.onOuterClick.bind(this));
     }
 
     onInputFocus() {
-        console.log('забиндил');
+        this.ac.classList.add('active');
+        this.dialog.classList.add('open');
+    }
+
+    onInput() {
+        this.close.classList.add('visible');
+        if (this.value.length >= this.symbolsToStart) {
+            if(e.keyCode != 38 && e.keyCode != 40) {
+                this.match(this.value);
+            }
+        } else {
+            this.close.classList.remove('visible');
+            this.setDialogList();
+        }
+    }
+
+    onClose() {
+        this.setDialogList();
+
+        this.close.classList.remove('visible');
+        this.ac.classList.add('active');
+        this.dialog.classList.add('open');
+
+
+        this.input.value = '';
+        this.input.focus();
+    }
+
+    onKeyPress(event) {
+        switch (event.keyCode) {
+            case 38: // if the UP key is pressed
+                if (document.activeElement == this.input || document.activeElement == this.dialog.firstChild) { this.input.focus(); }
+                else if (this.dialog.contains(document.activeElement)) { document.activeElement.previousSibling.focus(); }
+                break;
+            case 40: // if the DOWN key is pressed
+                if (document.activeElement == this.input) { this.dialog.firstChild.focus(); }
+                else if (document.activeElement == this.dialog.lastChild) { break; }
+                else if (this.dialog.contains(document.activeElement)) { document.activeElement.nextSibling.focus(); }
+                break;
+            case 13: // if the ENTER key is pressed
+                if (this.dialog.contains(document.activeElement)) {
+                    this.selectOption(document.activeElement.getAttribute('data-val'));
+                }
+                break;
+        }
+    }
+
+    onOuterClick(event) {
+        if (event.target !== this.input) {
+            this.ac.classList.remove('active');
+        }
+
+        if (event.target.classList.contains('option') && this.dialog.contains(document.activeElement)) {
+            this.selectOption(event.target.getAttribute('data-val'));
+        }
     }
 
 }

@@ -23,6 +23,10 @@ body {
 
     &.active {
         z-index: 100;
+
+        .dialog .body {
+            display: block;
+        }
     }
 
     .form-control {
@@ -109,10 +113,6 @@ body {
             max-height: 300px;
             padding: 0;
             overflow: auto;
-
-            &.open {
-                display: block;
-            }
         }
     }
 }
