@@ -59,6 +59,8 @@ class Autocomplete {
 
         // HANDLERS
 
+        this.initHandlers();
+
         var _ = this;
 
         _.input.addEventListener('click', function(){
@@ -209,6 +211,15 @@ class Autocomplete {
         this.input.focus();
         this.dialog.classList.remove('open');
         this.close.classList.add('visible');
+    }
+
+    initHandlers() {
+        console.log('allo!');
+        this.input.addEventListener('focus', this.onInputFocus.bind(this));
+    }
+
+    onInputFocus() {
+        console.log('забиндил');
     }
 
 }
