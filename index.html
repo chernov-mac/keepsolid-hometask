@@ -5,19 +5,25 @@
     <meta charset="UTF-8">
     <title>Autocomplete | Keepsolid</title>
     <link rel="stylesheet" href="css/grid.min.css">
+    <link rel="stylesheet" href="css/font-awesome.min.css">
     <link rel="stylesheet" href="css/style.min.css">
 </head>
 <body>
 
     <div class="row-24">
         <div class="col xxs-12">
-            <input type="text" id="names" placeholder="Search names">
+            <div class="form-control">
+                <input type="text" class="names-inputs" data-src="countries" placeholder="Search names">
+            </div>
         </div>
         <div class="col xxs-12">
-            <input type="text" id="something" placeholder="Starts matching from 3 symbols. Limit: 10">
+            <div class="form-control">
+                <input type="text" class="names-inputs" data-src="countries-cors" placeholder="Starts matching from 3 symbols. Limit: 10">
+            </div>
         </div>
     </div>
 
+<script src="js/countries.js"></script>
 <script src="js/autocomplete.js"></script>
 <script src="js/main.js"></script>
 </body>

@@ -1,6 +1,7 @@
 // out: ../css/style.min.css, compress: true
 
 @import "default.less";
+@import "autocomplete.less";
 
 html,body {
     width: 100%;
@@ -14,107 +15,108 @@ body {
     font-family: 'helvetica neue';
     box-sizing: border-box;
 }
-.autocomplete {
-    background: #fff;
+
+/* Animations */
+@-webkit-keyframes fa-spin {
+    0% {
+        -webkit-transform: rotate(0deg);
+                transform: rotate(0deg);
+    }
+    100% {
+        -webkit-transform: rotate(359deg);
+                transform: rotate(359deg);
+    }
+}
+@keyframes fa-spin {
+    0% {
+        -webkit-transform: rotate(0deg);
+                transform: rotate(0deg);
+    }
+    100% {
+        -webkit-transform: rotate(359deg);
+                transform: rotate(359deg);
+    }
+}
+.pulse {
+    -webkit-animation: fa-spin 1s infinite steps(8);
+            animation: fa-spin 1s infinite steps(8);
+}
+
+/* Typography */
+.fa-mixin {
+	font-family: FontAwesome;
+	font-weight: normal;
+	font-variant: normal;
+	text-rendering: auto;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+}
+
+/* Main */
+.form-control {
     position: relative;
-    width: 400px;
-    margin: 100px auto;
-    z-index: 1;
+    background: #fff;
+    transition: box-shadow .15s ease;
 
-    &.active {
-        z-index: 100;
-
-        .dialog .body {
-            display: block;
-        }
+    &.error {
+        box-shadow: 0 0 12px 2px rgba(255, 63, 63, 0.5);
     }
-
-    .form-control {
-        position: relative;
-        z-index: 3;
-        width: 100%;
-        border-bottom: 1px solid #f4f4f4;
-
-        &.error {
-            box-shadow: 0 0 12px 2px rgba(255, 63, 63, 0.5);
-        }
-
-        input {
-            padding: 10px 10px;
-            font-weight: 300;
-            width: 100%;
-            border: none;
-            outline: none;
-            font-size: 14px;
-            color: #666;
-        }
-    }
-    .close {
-        position: absolute;
-        top: 0;
-        right: 0;
-        display: none;
-        width: 40px;
-        height: 36px;
-        line-height: 36px;
-        vertical-align: middle;
-        text-align: center;
-        font-size: 16px;
-        z-index: 4;
-        color: #aaa;
-        cursor: pointer;
-
-        &:before {
-            content: '×';
-        }
-
-        &.visible {
-            display: block;
-        }
-    }
-    .dialog {
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        display: block;
-        width: 100%;
-        max-height: 337px;
-        overflow: hidden;
-        background: #fff;
+    &.loading {
+        // background: #ff9999;
         box-shadow: 0 0 2px rgba(0, 0, 0, 0.12), 0 2px 2px rgba(0, 0, 0, 0.24);
-        z-index: 2;
 
-        div {
-            padding: 20px 10px;
-            font-size: 13px;
-
-            &.option {
-                cursor: pointer;
-                transition: all 0.2s;
-
-                &:hover,
-                &:focus {
-                    background: #f2f2f2;
-                    outline: none;
-                }
-            }
-            .highlite {
-                background: rgba(110, 200, 255, 0.5);
-                font-weight: bold;
-            }
+        ::-webkit-input-placeholder { /* Chrome/Opera/Safari */
+            color: #ddd;
         }
-        .spacer {
-            height: 37px;
-            padding: 0;
+        ::-moz-placeholder { /* Firefox 19+ */
+            color: #ddd;
         }
-        .body {
-            display: none;
-            max-height: 300px;
-            padding: 0;
-            overflow: auto;
+        :-ms-input-placeholder { /* IE 10+ */
+            color: #ddd;
+        }
+        :-moz-placeholder { /* Firefox 18- */
+            color: #ddd;
+        }
+        &:after {
+            content: '\f110';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            display: block;
+            width: 20px;
+            height: 20px;
+            line-height: 20px;
+            margin-top: -10px;
+            margin-left: -10px;
+            text-align: center;
+            vertical-align: middle;
+            font-size: 18px;
+            color: #888;
+            .fa-mixin;
+            .pulse;
         }
     }
+
+    input {
+        padding: 10px 10px;
+        font-weight: 300;
+        width: 100%;
+        border: none;
+        outline: none;
+        font-size: 14px;
+        color: #666;
+        background: none;
+    }
+}
+.autocomplete, .form-control {
+    max-width: 400px;
+    margin: 100px auto;
+}
+
+input::-webkit-input-placeholder,
+    input::-ms-input-placeholder
+        input::input-placeholder {
+    color: red;
 }
 
 @import "adaptive.less";
