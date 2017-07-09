@@ -1,0 +1,70 @@
+// main: style.less
+
+div.autocomplete {
+
+	.form-control {
+		display: flex;
+
+		input {
+			flex: 0 1 auto;
+		}
+	}
+	.dialog {
+		.suggestions {
+			li {
+				&.selected,
+				&.selected:hover {
+					position: relative;
+					background: #42aaff;
+					color: #fff;
+					// text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.3);
+				}
+				&.selected:after {
+					content: '\f00c';
+					position: absolute;
+					top: 0;
+					right: 15px;
+					bottom: 0;
+					font-size: 26px;
+					line-height: 54px;
+					vertical-align: middle;
+					color: #308dd8;
+					text-shadow: 0px 1px 0 rgba(255,255,255,0.25), 0px -1px 0 rgba(0,0,0,.35);
+					.fa-mixin;
+				}
+			}
+		}
+	}
+}
+.chips-list {
+	flex: 0 0 auto;
+	position: relative;
+	padding-left: 4px;
+	z-index: 3;
+
+	.chip {
+		position: relative;
+		float: left;
+		display: block;
+		height: 30px;
+		line-height: 30px;
+		margin: 4px 8px 0 0;
+		padding: 0 12px;
+		background: #ccc;
+		border-radius: 16px;
+		color: #555;
+		vertical-align: middle;
+
+		&.removable {
+			padding-right: 20px;
+		}
+		.remove {
+			position: absolute;
+			top: 5px;
+			right: 5px;
+			font-size: 20px;
+			line-height: 20px;
+			cursor: pointer;
+		}
+	}
+}
