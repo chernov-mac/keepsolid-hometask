@@ -1,5 +1,5 @@
 /*
-*    JavaScript autoComplete
+*    JavaScript Autocomplete
 *    Author: Vladimir Chernov
 *    For KeepSolid Summer Internship 2017
 */
@@ -13,7 +13,10 @@ const defaultOptions = {
     sort: 'ASC', // ASC || DESC
     onSelect: null, // callback function on item select
     errorClass: 'error', // sort order
-    highliteMatchesClass: 'highlite' // span.highlite
+    highliteMatchesClass: 'highlite', // span.highlite
+    // chips options
+    selectOnlyOnce: true,
+    removable: true
 };
 
 class Autocomplete {
@@ -24,6 +27,9 @@ class Autocomplete {
         this.data = data;
         this.options = Object.assign({}, defaultOptions, options); // merge options
         this.resultData = [];
+         // chips properties. is it okay?
+        this.chips = [];
+        this.chipsList = [];
 
         this.init();
     }
@@ -145,7 +151,6 @@ class Autocomplete {
 
             for (let i = 0; i < this.resultData.length; i++) {
                 let value = this.resultData[i];
-
                 let dataValue = value.replace(hl, '$1');
 
                 items += `<li class="option" tabindex="${i + 1}" data-val="${dataValue}">${value}</li>`;
@@ -187,11 +192,12 @@ class Autocomplete {
         this.setDialogList();
     }
 
-    selectOption(str) {
-        this.input.value = str;
+    selectOption(option) {
+        this.input.value = option.getAttribute('data-val');
         str && this.options.onSelect && this.options.onSelect.call(this, str);
         this.match(str);
         this.input.focus();
+        console.log('here');
         this.close.classList.add('visible');
     }
 
@@ -208,15 +214,15 @@ class Autocomplete {
     }
 
     onInput() {
-        this.close.classList.add('visible');
-        if (this.input.value.length >= this.options.symbolsToStart) {
-            if(event.keyCode != 38 && event.keyCode != 40) {
+        if(event.keyCode != 38 && event.keyCode != 40) {
+            if (this.input.value.length >= this.options.symbolsToStart) {
+                this.close.classList.add('visible');
                 this.match(this.input.value);
+            } else {
+                this.close.classList.remove('visible');
+                this.resultData = this.data;
+                this.setDialogList();
             }
-        } else {
-            this.close.classList.remove('visible');
-            this.resultData = this.data;
-            this.setDialogList();
         }
     }
 
@@ -235,19 +241,41 @@ class Autocomplete {
     onKeyPress(event) {
         switch (event.keyCode) {
             case 38: // if the UP key is pressed
-                if (document.activeElement == this.input || document.activeElement == this.suggestions.firstChild) { this.input.focus(); }
-                else if (this.suggestions.contains(document.activeElement)) { document.activeElement.previousSibling.focus(); }
+                this.focusPrev(document.activeElement);
                 break;
             case 40: // if the DOWN key is pressed
-                if (document.activeElement == this.input) { this.suggestions.firstChild.focus(); }
-                else if (document.activeElement == this.suggestions.lastChild) { break; }
-                else if (this.suggestions.contains(document.activeElement)) { document.activeElement.nextSibling.focus(); }
+                this.focusNext(document.activeElement);
                 break;
             case 13: // if the ENTER key is pressed
                 if (this.suggestions.contains(document.activeElement)) {
-                    this.selectOption(document.activeElement.getAttribute('data-val'));
+                    this.selectOption(document.activeElement);
                 }
                 break;
+        }
+    }
+
+    focusPrev(current) {
+        if (current == this.input || current == this.suggestions.firstChild) { this.input.focus(); }
+        else if (this.suggestions.contains(current)) {
+            if (current.previousSibling.classList.contains('selected')) {
+                this.focusPrev(current.previousSibling);
+            } else {
+                current.previousSibling.focus();
+            }
+        }
+    }
+
+    focusNext(current) {
+        if (document.activeElement == this.input) {
+            this.suggestions.querySelector('.option:not(.selected)').focus();
+        }
+        // else if (document.activeElement == this.suggestions.lastChild) { return; }
+        else if (this.suggestions.contains(document.activeElement)) {
+            if (current.nextSibling.classList.contains('selected')) {
+                this.focusNext(current.nextSibling);
+            } else {
+                current.nextSibling.focus();
+            }
         }
     }
 
@@ -257,7 +285,7 @@ class Autocomplete {
         }
 
         if (this.suggestions.contains(document.activeElement)) {
-            this.selectOption(event.target.getAttribute('data-val'));
+            this.selectOption(event.target);
         }
     }
 

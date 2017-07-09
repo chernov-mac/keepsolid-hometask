@@ -2,6 +2,7 @@
 
 @import "default.less";
 @import "autocomplete.less";
+@import "chips.less";
 
 html,body {
     width: 100%;
@@ -53,16 +54,20 @@ body {
 }
 
 /* Main */
+p {
+    margin: 10px 0 15px;
+}
 .form-control {
     position: relative;
     background: #fff;
     transition: box-shadow .15s ease;
+    margin: 100px auto;
 
     &.error {
         box-shadow: 0 0 12px 2px rgba(255, 63, 63, 0.5);
     }
     &.loading {
-        // background: #ff9999;
+        background: #fafafa;
         box-shadow: 0 0 2px rgba(0, 0, 0, 0.12), 0 2px 2px rgba(0, 0, 0, 0.24);
 
         ::-webkit-input-placeholder { /* Chrome/Opera/Safari */
@@ -91,7 +96,7 @@ body {
             text-align: center;
             vertical-align: middle;
             font-size: 18px;
-            color: #888;
+            color: #666;
             .fa-mixin;
             .pulse;
         }
@@ -108,15 +113,12 @@ body {
         background: none;
     }
 }
-.autocomplete, .form-control {
-    max-width: 400px;
+.autocomplete {
     margin: 100px auto;
-}
 
-input::-webkit-input-placeholder,
-    input::-ms-input-placeholder
-        input::input-placeholder {
-    color: red;
+    .form-control {
+        margin: 0 auto;
+    }
 }
 
 @import "adaptive.less";

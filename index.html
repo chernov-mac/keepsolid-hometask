@@ -11,20 +11,23 @@
 <body>
 
     <div class="row-24">
-        <div class="col xxs-12">
+        <div class="col xxs-12 md-8 offset-md-2">
             <div class="form-control">
-                <input type="text" class="names-inputs" data-src="countries" placeholder="Search names">
+                <input type="text" class="names-inputs" id="firstInput" data-src="countries" placeholder="Search names">
             </div>
+            <p>You chose:</p>
+            <p class="result" data-for="#firstInput"></p>
         </div>
-        <div class="col xxs-12">
+        <!-- <div class="col xxs-12 md-6 offset-md-3">
             <div class="form-control">
                 <input type="text" class="names-inputs" data-src="countries-cors" placeholder="Starts matching from 3 symbols. Limit: 10">
             </div>
-        </div>
+        </div> -->
     </div>
 
 <script src="js/countries.js"></script>
 <script src="js/autocomplete.js"></script>
+<script src="js/chips.js"></script>
 <script src="js/main.js"></script>
 </body>
 </html>

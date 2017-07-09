@@ -1,6 +1,6 @@
 /*jslint esversion: 6 */
 /*jslint node: true */
-/*global document, alert, fetch, Autocomplete, countriesData*/
+/*global document, alert, fetch, Autocomplete, Chips, countriesData*/
 
 'use strict';
 
@@ -17,10 +17,16 @@ autocompleteInputs.forEach(curInput => {
 
         const data = Object.keys(result).map(key => result[key]);
 
-        new Autocomplete(curInput, data, {
-            onSelect: (value) => {
-                curInput.value = value;
-                alert(value);
+        // new Autocomplete(curInput, data, {
+        //     onSelect: (value) => {
+        //         curInput.value = value;
+        //         alert(value);
+        //     }
+        // });
+        new Chips(curInput, data, {
+            onSelect: (result) => {
+                let str = '<span>' + result.join('</span>, <span>') + '</span>';
+                document.querySelector('.result[data-for="#'+curInput.getAttribute('id')+'"]').innerHTML = str;
             }
         });
     });
