@@ -11,7 +11,7 @@ const ChipsDefaults = {
 	selectOnlyOnce: true,
 	removable: true,
 	removeBtnText: '&times;',
-	toggleOnSelect: false // override selectOnlyOnce (as false)
+	toggleOnSelect: true // override selectOnlyOnce (as false)
 };
 
 class Chips extends Autocomplete {
@@ -113,19 +113,17 @@ class Chips extends Autocomplete {
 
 	selectOption(option) {
 		let str = option.getAttribute('data-val');
-		// проверка на макс количество
 
 		if (this.options.toggleOnSelect) {
 
 			if(!this.chips.includes(str)) {
 				if(!this.isMaxAmount()) {
 					this.addChip(str);
-					this.toggleMarking(option);
 				}
 			} else {
 				this.removeChip(str);
-				this.toggleMarking(option);
 			}
+			this.markSelectedOptions();
 
 		} else {
 
