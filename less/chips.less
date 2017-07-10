@@ -1,23 +1,79 @@
 // main: style.less
 
-div.autocomplete {
+div.chips {
+	display: flex;
+	flex-wrap: wrap;
 
-	.form-control {
-		display: flex;
+	.chips-list {
+		flex: 0 0 auto;
+		position: relative;
+		z-index: 3;
 
-		input {
-			flex: 0 1 auto;
+		.chip {
+			position: relative;
+			float: left;
+			display: inline-block;
+			height: 26px;
+			line-height: 26px;
+			margin: 6px 4px;
+			padding: 0 12px;
+			background: @blue;
+			color: #fff;
+			text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.3);
+			border-radius: 16px;
+			vertical-align: middle;
+			font-size: 14px;
+
+			&.removable {
+				padding-right: 26px;
+			}
+			&:last-child {
+				margin-right: 0;
+			}
+			.remove {
+				position: absolute;
+				top: 4px;
+				right: 4px;
+				display: block;
+				width: 18px;
+				height: 18px;
+				line-height: 16px;
+				border-radius: 50%;
+				background-color: #308dd8;
+				background:
+				color: #ccc;
+				font-size: 13px;
+				text-align: center;
+				cursor: pointer;
+				.itempress;
+				.letterpress;
+			}
+
+			&:hover {
+				.remove {
+					background: @red;
+					color: #fff;
+				}
+			}
 		}
+	}
+	.form-control {
+		flex: 1 0 auto;
+		width: auto;
 	}
 	.dialog {
 		.suggestions {
 			li {
-				&.selected,
-				&.selected:hover {
+				&.selected {
+					// display: none;
 					position: relative;
-					background: #42aaff;
+					background: @blue;
 					color: #fff;
-					// text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.3);
+					text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.3);
+
+					&:hover {
+						background: @blue;
+					}
 				}
 				&.selected:after {
 					content: '\f00c';
@@ -29,42 +85,10 @@ div.autocomplete {
 					line-height: 54px;
 					vertical-align: middle;
 					color: #308dd8;
-					text-shadow: 0px 1px 0 rgba(255,255,255,0.25), 0px -1px 0 rgba(0,0,0,.35);
+					.letterpress;
 					.fa-mixin;
 				}
 			}
-		}
-	}
-}
-.chips-list {
-	flex: 0 0 auto;
-	position: relative;
-	padding-left: 4px;
-	z-index: 3;
-
-	.chip {
-		position: relative;
-		float: left;
-		display: block;
-		height: 30px;
-		line-height: 30px;
-		margin: 4px 8px 0 0;
-		padding: 0 12px;
-		background: #ccc;
-		border-radius: 16px;
-		color: #555;
-		vertical-align: middle;
-
-		&.removable {
-			padding-right: 20px;
-		}
-		.remove {
-			position: absolute;
-			top: 5px;
-			right: 5px;
-			font-size: 20px;
-			line-height: 20px;
-			cursor: pointer;
 		}
 	}
 }

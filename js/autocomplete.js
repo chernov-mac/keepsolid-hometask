@@ -5,7 +5,7 @@
 */
 /*jslint esversion: 6 */
 
-const defaultOptions = {
+const AutocompleteDefaults = {
     noSuggestionText: 'No matches',
     arrowNavigation: true,
     symbolsToStart: 1, // start matching from this symbols amount
@@ -13,10 +13,7 @@ const defaultOptions = {
     sort: 'ASC', // ASC || DESC
     onSelect: null, // callback function on item select
     errorClass: 'error', // sort order
-    highliteMatchesClass: 'highlite', // span.highlite
-    // chips options
-    selectOnlyOnce: true,
-    removable: true
+    highliteMatchesClass: 'highlite' // span.highlite
 };
 
 class Autocomplete {
@@ -25,11 +22,8 @@ class Autocomplete {
 
         this.input = input;
         this.data = data;
-        this.options = Object.assign({}, defaultOptions, options); // merge options
+        this.options = Object.assign({}, AutocompleteDefaults, options);
         this.resultData = [];
-         // chips properties. is it okay?
-        this.chips = [];
-        this.chipsList = [];
 
         this.init();
     }
@@ -102,21 +96,19 @@ class Autocomplete {
         // create close button
         this.close = document.createElement('span');
         this.close.classList.add('close');
-        this.ac.appendChild(this.close);
+        this.fc.appendChild(this.close);
     }
 
     createDialog() {
-        // create dialog to contain spacer and suggestions block with options
-        let spacer = document.createElement('div');
-        spacer.classList.add('spacer');
-        let suggestions = document.createElement('ul');
-        suggestions.classList.add('suggestions');
+        // create dialog to contain suggestions block with options and other
+        this.suggestions = document.createElement('ul');
+        this.suggestions.classList.add('suggestions');
         this.dialog = document.createElement('div');
         this.dialog.classList.add('dialog');
-        this.dialog.appendChild(spacer);
-        this.dialog.appendChild(suggestions);
+
+        this.dialog.appendChild(this.suggestions);
         this.ac.appendChild(this.dialog);
-        this.suggestions = suggestions;
+
         this.isOpened = false;
     }
 
@@ -145,8 +137,9 @@ class Autocomplete {
         let items = '';
         if (!this.resultData.length) {
             this.fc.classList.add(this.options.errorClass);
-            items = `<li class="${this.options.errorClass}">${this.options.noSuggestionText}</li>`;
+            this.showMessage(this.dialog, this.suggestions, this.options.noSuggestionText, 'error', 'noSuggestion');
         } else {
+            this.removeMessage(this.dialog, 'error', 'noSuggestion');
             const hl = new RegExp(`<span.*?>(.+?)</span>`, 'gi');
 
             for (let i = 0; i < this.resultData.length; i++) {
@@ -158,6 +151,25 @@ class Autocomplete {
         }
 
         this.suggestions.innerHTML = items;
+    }
+
+    showMessage(elem, elemBefore, msg, msgClass, type) {
+        let prevMsg = elem.querySelector('.message.'+msgClass+'[data-type="'+type+'"]');
+        if (prevMsg) {
+            prevMsg.innerHTML = msg;
+        } else {
+            let message = document.createElement('span');
+            message.classList.add('message');
+            message.classList.add(msgClass);
+            message.setAttribute('data-type', type);
+            message.innerHTML = msg;
+            elem.insertBefore(message, elemBefore);
+        }
+    }
+
+    removeMessage(elem, msgClass, type) {
+        let message = elem.querySelector('.message.'+msgClass+'[data-type="'+type+'"]');
+        message && message.remove();
     }
 
     sortData() {
@@ -214,7 +226,7 @@ class Autocomplete {
     }
 
     onInput() {
-        if(event.keyCode != 38 && event.keyCode != 40) {
+        if(event.keyCode != 38 && event.keyCode != 40 && event.keyCode != 13) {
             if (this.input.value.length >= this.options.symbolsToStart) {
                 this.close.classList.add('visible');
                 this.match(this.input.value);
@@ -284,7 +296,7 @@ class Autocomplete {
             this.isOpened = false;
         }
 
-        if (this.suggestions.contains(document.activeElement)) {
+        if (this.suggestions.contains(event.target)) {
             this.selectOption(event.target);
         }
     }

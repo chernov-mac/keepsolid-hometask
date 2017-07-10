@@ -4,15 +4,20 @@ div.autocomplete {
 	background: #fff;
 	position: relative;
 	z-index: 1;
+	color: #333;
 
 	&.active {
 		z-index: 100;
 
-		.form-control {
-		    border-bottom: 1px solid #f4f4f4;
-		}
-		.dialog .suggestions {
-			display: block;
+		.dialog {
+
+			.suggestions {
+				display: block;
+			    border-top: 1px solid #f4f4f4;
+			}
+			.message {
+				display: block;
+			}
 		}
 	}
 
@@ -46,15 +51,14 @@ div.autocomplete {
     }
     .dialog {
         position: absolute;
-        top: 0;
+        top: 100%;
         left: 0;
         right: 0;
         display: block;
         width: 100%;
-        max-height: 337px;
+        max-height: 300px;
         overflow: hidden;
         background: #fff;
-        box-shadow: 0 0 2px rgba(0, 0, 0, 0.12), 0 2px 2px rgba(0, 0, 0, 0.24);
         z-index: 2;
 
         .suggestions {
@@ -85,9 +89,15 @@ div.autocomplete {
                 }
             }
         }
-        .spacer {
-            height: 37px;
-            padding: 0;
-        }
+		.message {
+			display: none;
+			padding: 15px 10px 10px;
+			font-size: 12px;
+			font-weight: 400;
+
+			&.error {
+				color: @red;
+			}
+		}
     }
 }
