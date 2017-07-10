@@ -205,12 +205,13 @@ class Autocomplete {
     }
 
     selectOption(option) {
-        this.input.value = option.getAttribute('data-val');
-        str && this.options.onSelect && this.options.onSelect.call(this, str);
+        let str = option.getAttribute('data-val');
+        this.input.value = str;
         this.match(str);
-        this.input.focus();
-        console.log('here');
         this.close.classList.add('visible');
+        this.input.focus();
+
+        str && this.options.onSelect && this.options.onSelect.call(this, str);
     }
 
     initHandlers() {

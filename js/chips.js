@@ -154,4 +154,9 @@ class Chips extends Autocomplete {
 		this.markSelectedOptions();
 	}
 
+	onClose() {
+		super.onClose();
+		this.markSelectedOptions();
+	}
+
 }
