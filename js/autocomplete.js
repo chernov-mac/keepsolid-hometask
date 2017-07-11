@@ -218,6 +218,7 @@ class Autocomplete {
         this.input.addEventListener('focus', this.onInputFocus.bind(this));
         this.input.addEventListener('keyup', this.onInput.bind(this));
         this.close.addEventListener('click', this.onClose.bind(this));
+        this.suggestions.addEventListener('click', this.onSuggestionsClick.bind(this));
         document.addEventListener('keyup', this.onKeyPress.bind(this));
         document.addEventListener('click', this.onOuterClick.bind(this));
     }
@@ -296,7 +297,9 @@ class Autocomplete {
         if (event.target !== this.input && event.target !== this.close && !this.suggestions.contains(event.target)) {
             this.isOpened = false;
         }
+    }
 
+    onSuggestionsClick(event) {
         if (this.suggestions.contains(event.target)) {
             this.selectOption(event.target);
         }
