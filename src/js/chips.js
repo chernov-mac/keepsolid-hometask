@@ -15,7 +15,8 @@ const ChipsDefaults = {
 	toggleOnSelect: false // override selectOnlyOnce (as false)
 };
 
-class Chips extends Autocomplete {
+import { Autocomplete } from "./autocomplete.js";
+export class Chips extends Autocomplete {
 
 	constructor(input, data, options) {
 

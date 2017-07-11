@@ -3,6 +3,8 @@
 /*global document, alert, fetch, Autocomplete, Chips, countriesData*/
 
 'use strict';
+import Autocomplete from "./autocomplete.js";
+import Chips from "./chips.js";
 
 // TODO: add JS Doc
 

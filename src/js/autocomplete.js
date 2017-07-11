@@ -16,7 +16,7 @@ const AutocompleteDefaults = {
     highliteMatchesClass: 'highlite' // span.highlite
 };
 
-class Autocomplete {
+export class Autocomplete {
 
     constructor(input, data, options) {
 
