@@ -15,7 +15,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 */
 /*jslint esversion: 6 */
 
-var AutocompleteDefaults = {
+var AutocompleteDefaults = exports.AutocompleteDefaults = {
     noSuggestionText: 'No matches',
     arrowNavigation: true,
     symbolsToStart: 1, // start matching from this symbols amount
@@ -70,8 +70,9 @@ var Autocomplete = exports.Autocomplete = function () {
             this.ac.classList.add('autocomplete');
 
             // div.form-control to contain input itself
-            this.fc = this.input.closest('.form-control');
-            if (!this.fc) {
+            this.fc = this.input.parentNode;
+            // this.fc = this.input.closest('.form-control');
+            if (this.fc.classList.contains('form-control')) {
                 this.fc = document.createElement('div');
                 this.fc.classList.add('form-control');
                 this.ac.appendChild(this.fc);

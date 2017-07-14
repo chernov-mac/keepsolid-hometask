@@ -5,7 +5,7 @@
 */
 /*jslint esversion: 6 */
 
-const AutocompleteDefaults = {
+export const AutocompleteDefaults = {
     noSuggestionText: 'No matches',
     arrowNavigation: true,
     symbolsToStart: 1, // start matching from this symbols amount
@@ -69,8 +69,9 @@ export class Autocomplete {
         this.ac.classList.add('autocomplete');
 
         // div.form-control to contain input itself
-        this.fc = this.input.closest('.form-control');
-        if (!this.fc) {
+        this.fc = this.input.parentNode;
+        // this.fc = this.input.closest('.form-control');
+        if (this.fc.classList.contains('form-control')) {
             this.fc = document.createElement('div');
             this.fc.classList.add('form-control');
             this.ac.appendChild(this.fc);

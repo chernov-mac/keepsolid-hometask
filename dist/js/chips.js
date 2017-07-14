@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
 	value: true
 });
-exports.Chips = undefined;
+exports.Chips = exports.ChipsDefaults = undefined;
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
@@ -24,7 +24,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 */
 /*jslint esversion: 6 */
 
-var ChipsDefaults = {
+var ChipsDefaults = exports.ChipsDefaults = {
 	maxChipsNumber: 4, // 0 - without limit
 	maxChipsText: 'Maximum number of chips reached.',
 	isSelectedText: 'This option is already selected.',
@@ -194,7 +194,7 @@ var Chips = exports.Chips = function (_Autocomplete) {
 		key: 'chipsClick',
 		value: function chipsClick(event) {
 			if (event.target.classList.contains('remove')) {
-				var value = event.target.closest('.chip').getAttribute('data-val');
+				var value = event.target.parentNode.getAttribute('data-val');
 				this.removeChip(value);
 			}
 		}

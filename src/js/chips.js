@@ -5,7 +5,7 @@
 */
 /*jslint esversion: 6 */
 
-const ChipsDefaults = {
+export const ChipsDefaults = {
 	maxChipsNumber: 4, // 0 - without limit
 	maxChipsText: 'Maximum number of chips reached.',
 	isSelectedText: 'This option is already selected.',
@@ -15,7 +15,7 @@ const ChipsDefaults = {
 	toggleOnSelect: false // override selectOnlyOnce (as false)
 };
 
-import { Autocomplete } from "./autocomplete.js";
+import { Autocomplete, AutocompleteDefaults } from "./autocomplete.js";
 export class Chips extends Autocomplete {
 
 	constructor(input, data, options) {
@@ -153,7 +153,7 @@ export class Chips extends Autocomplete {
 
 	chipsClick(event) {
 		if (event.target.classList.contains('remove')) {
-			let value = event.target.closest('.chip').getAttribute('data-val');
+			let value = event.target.parentNode.getAttribute('data-val');
 			this.removeChip(value);
 		}
 	}

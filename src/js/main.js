@@ -3,8 +3,8 @@
 /*global document, alert, fetch, Autocomplete, Chips, countriesData*/
 
 'use strict';
-import Autocomplete from "./autocomplete.js";
-import Chips from "./chips.js";
+import { Autocomplete, AutocompleteDefaults } from "./autocomplete.js";
+import { Chips, ChipsDefaults } from "./chips.js";
 
 // TODO: add JS Doc
 
@@ -16,7 +16,7 @@ chipsInputs = Array.prototype.slice.call(chipsInputs);
 
 autocompleteInputs.forEach(curInput => {
     const dataSource = curInput.dataset.src;
-    curInput.closest('.form-control').classList.add('loading'); // preloader
+    curInput.parentNode.classList.add('loading'); // preloader
 
     getData(dataSource, curInput).then((result) => {
         const data = Object.keys(result).map(key => result[key]);
@@ -32,7 +32,7 @@ autocompleteInputs.forEach(curInput => {
 
 chipsInputs.forEach(curInput => {
     const dataSource = curInput.dataset.src;
-    curInput.closest('.form-control').classList.add('loading'); // preloader
+    curInput.parentNode.classList.add('loading'); // preloader
 
     getData(dataSource, curInput).then((result) => {
         const data = Object.keys(result).map(key => result[key]);
@@ -52,14 +52,11 @@ function getData(dataString, curInput) {
             return fetch('https://crossorigin.me/http://country.io/names.json', {
                 mode: 'cors',
             }).then(function(result){
-                // setTimeout(function () {
-                    // console.log('loaded!');
-                    curInput.closest('.form-control').classList.remove('loading');
-                    return result.json();
-                // }, 30000);
+                curInput.parentNode.classList.remove('loading');
+                return result.json();
             });
         default:
-            curInput.closest('.form-control').classList.remove('loading');
+            curInput.parentNode.classList.remove('loading');
             return new Promise((resolve, reject) => {
                 resolve(countriesData);
             });
