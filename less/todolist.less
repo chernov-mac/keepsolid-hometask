@@ -1,0 +1,94 @@
+// main: style.less
+
+.todolist {
+	display: block;
+	background: #fff;
+
+	.todolist-item {
+		display: flex;
+		align-items: center;
+
+		&--complete {
+			flex: 0 auto;
+			order: 1;
+			display: block;
+			margin: 0 15px 0 0;
+		}
+		&--text {
+			flex: 1 0px;
+			order: 2;
+			position: relative;
+			overflow: hidden;
+			white-space: nowrap;
+			text-overflow: ellipsis;
+
+			.value, .edit-value {
+				display: inline-block;
+				height: 38px;
+			}
+			.value {
+				z-index: 1;
+			}
+			.edit-value {
+				visibility: hidden;
+				position: absolute;
+				top: 0;
+				left: 0;
+				right: 0;
+				width: 100%;
+				z-index: 2;
+
+				input {
+                    width: 100%;
+                }
+			}
+
+			&:hover {
+				cursor: text;
+			}
+		}
+		&--remove {
+			flex: 0 auto;
+			order: 3;
+			display: block;
+			margin: 0 0 0 15px;
+			text-align: center;
+			cursor: pointer;
+		}
+
+		&.active {
+			.todolist-item {
+				&--text {
+					.value {
+						visibility: hidden;
+					}
+					.edit-value {
+						visibility: visible;
+					}
+				}
+			}
+		}
+
+		&.complete {
+			.todolist-item {
+				&--text {
+					.value {
+						text-decoration: line-through;
+					}
+				}
+			}
+		}
+	}
+}
+.todolist--add-form {
+	display: flex;
+
+	.form-control {
+		flex: 1 auto;
+		margin-bottom: 20px;
+	}
+	.btn {
+		flex: 0 auto;
+		margin-left: 15px;
+	}
+}

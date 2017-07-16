@@ -3,10 +3,13 @@
 @import "default.less";
 @import "autocomplete.less";
 @import "chips.less";
+@import "todolist.less";
 
 // Variables
-@blue: #42aaff;
-@red: #ff4e4e;
+// @blue: #42aaff;
+@blue: #2196f3;
+@red: #f44336;
+@green: #4caf50;
 
 /* Animations */
 @-webkit-keyframes fa-spin {
@@ -52,6 +55,9 @@ h3 {
     font-size: 24px;
     font-weight: 600;
 }
+h4 {
+    font-weight: 600;
+}
 code {
     font-family: 'Consolas';
     font-size: 14px;
@@ -80,11 +86,22 @@ code {
         color: @color;
     }
 }
-.itempress {
+.itempress(@bg: #fff, @strength: #222) {
     box-shadow: 0px 1px 0 rgba(255,255,255,0.25), 0px -1px 0 rgba(0,0,0,.35);
+    background-color: @bg - @strength;
 }
-.letterpress {
+.letterpress(@bg: #fff, @strength: #222) {
     text-shadow: 0px 1px 0 rgba(255,255,255,0.25), 0px -1px 0 rgba(0,0,0,.35);
+    color: @bg - @strength;
+}
+.box-shadow {
+    box-shadow: 0 0 2px rgba(0, 0, 0, 0.12), 0 2px 2px rgba(0, 0, 0, 0.24);
+}
+.transition(@duration: .3s; @property: all; @easing: ease; @delay: 0s;) {
+    -webkit-transition: @duration @property @easing;
+            transition: @duration @property @easing;
+    -webkit-transition-delay: @delay;
+            transition-delay: @delay;
 }
 
 /* Main */
@@ -110,6 +127,11 @@ body {
             color: @blue;
         }
     }
+    h4 {
+        margin: 20px 0 15px;
+        text-align: center;
+        color: #444;
+    }
     &#chips {
         .present-row {
             margin-bottom: 325px;
@@ -124,6 +146,7 @@ p {
     background: #fff;
     transition: box-shadow .15s ease;
     margin: 0 auto;
+    .box-shadow;
 
     input {
         padding: 10px 10px;
@@ -167,16 +190,171 @@ p {
         }
     }
 }
+.btn {
+    display: inline-block;
+    height: 38px;
+    line-height: 38px;
+    padding: 0 25px;
+    background: #fff;
+    border: none;
+    outline: none;
+    box-shadow: none;
+    font-size: 16px;
+    color: #aaa;
+    overflow: hidden;
+    cursor: pointer;
+    .box-shadow;
+
+    &.btn-icon {
+        position: relative;
+
+        .text,
+        .icon {
+            display: inline-block;
+            height: 100%;
+            text-align: center;
+        }
+        .text {
+            position: relative;
+            padding-right: 37px;
+            line-height: inherit;
+            text-transform: uppercase;
+            left: 0;
+            .transition(all, 0.25s, cubic-bezier(0.310, -0.105, 0.430, 1.400));
+
+            &:after {
+                content: '';
+                background-color: rgba(0, 0, 0, 0.4);
+                width: 2px;
+                height: 60%;
+                position: absolute;
+                top: 20%;
+                right: 25px;
+                .itempress(#eee);
+            }
+        }
+        .icon {
+            position: absolute;
+            top: 0;
+            right: 0;
+            padding: 0 25px;
+            text-align: center;
+            .transition(all, 0.25s, cubic-bezier(0.310, -0.105, 0.430, 1.400));
+
+            .fa {
+                height: 20px;
+                vertical-align: middle;
+                transition: height 0.1s ease, font-size 0.1s ease;
+
+                &.success,
+                &.error {
+                    display: none;
+                }
+            }
+        }
+
+        &.success,
+        &.error,
+        &:hover {
+            .text {
+                transform: translateX(-100%);
+                opacity: 0;
+            }
+            .icon {
+                right: 50%;
+                transform: translateX(50%);
+
+                .fa {
+                    font-size: 24px;
+                    height: 26px;
+                }
+            }
+        }
+    }
+
+    &.red {
+        background: @red;
+        .letterpress(#fff, #111);
+
+        &.btn-icon {
+            .text {
+                &:after {
+                    .itempress(@red);
+                }
+            }
+            .icon .fa {
+                .letterpress(@red);
+            }
+        }
+    }
+    &.green {
+        background: @green;
+        .letterpress(#fff, #111);
+
+        &.btn-icon {
+            .text {
+                &:after {
+                    .itempress(@green);
+                }
+            }
+            .icon .fa {
+                .letterpress(@green);
+            }
+        }
+    }
+    &.blue {
+        background: @blue;
+        .letterpress(#fff, #111);
+
+        &.btn-icon {
+            .text {
+                &:after {
+                    .itempress(@blue);
+                }
+            }
+            .icon .fa {
+                .letterpress(@blue);
+            }
+        }
+    }
+
+    &.success {
+        .btn.green;
+        .icon {
+            .fa {
+                display: none;
+
+                &.fa-check {
+                    display: inline-block;
+                }
+            }
+        }
+    }
+    &.error {
+        .btn.red;
+        .icon {
+            .fa {
+                display: none;
+
+                &.fa-remove {
+                    display: inline-block;
+                }
+            }
+        }
+    }
+}
+
 .autocomplete {
     margin: 0 auto;
-    box-shadow: 0 0 2px rgba(0, 0, 0, 0.12), 0 2px 2px rgba(0, 0, 0, 0.24);
+    // box-shadow: 0 0 2px rgba(0, 0, 0, 0.12), 0 2px 2px rgba(0, 0, 0, 0.24);
 
     .dialog {
         box-shadow: 0 0 2px rgba(0, 0, 0, 0.12), 0 2px 2px rgba(0, 0, 0, 0.24);
     }
 
-    .form-control {
+    .form-control:not(.error) {
         margin: 0 auto;
+        box-shadow: none;
     }
     & > .message {
         position: absolute;
@@ -186,6 +364,139 @@ p {
 
         &.error {
             color: @red;
+        }
+    }
+}
+
+.todolist {
+    margin-bottom: 20px;
+    .box-shadow;
+
+    .todolist-item {
+        border-bottom: 1px solid #eee;
+
+        &--complete {
+            margin: 0;
+
+            input {
+                margin: 4px 8px;
+            }
+        }
+        &--text {
+			.value,
+            .edit-value input {
+                padding: 10px 10px;
+				font-family: 'Helvetica';
+				font-weight: 300;
+				font-size: 14px;
+				line-height: 18px;
+				letter-spacing: 0.03em;
+			}
+            .edit-value {
+                box-shadow: none;
+                background: transparent;
+
+                input {
+                    padding-right: 30px;
+                }
+            }
+        }
+        &--remove {
+            margin: 0;
+            padding: 4px 8px;
+
+            .remove {
+                right: 4px;
+                display: block;
+                width: 18px;
+                height: 18px;
+                line-height: 16px;
+                border-radius: 50%;
+                font-size: 13px;
+                text-align: center;
+                cursor: pointer;
+                color: #888;
+                .itempress();
+            }
+        }
+
+        &.editable {
+
+            .todolist-item {
+                &--text {
+                    padding-right: 25px;
+
+                    &:after {
+                        content: '\f040';
+                        position: absolute;
+                        top: 0;
+                        right: 10px;
+                        bottom: 0;
+                        display: inline-block;
+                        color: #888;
+                        line-height: 36px;
+                        vertical-align: middle;
+                        visibility: hidden;
+                        z-index: 3;
+                        .fa-mixin;
+                    }
+                    &:hover {
+                        &:after {
+                            visibility: visible;
+                        }
+                    }
+                }
+            }
+
+            &.active {
+                border-bottom-color: @blue;
+
+                .todolist-item {
+                    &--text {
+                        &:after {
+                            visibility: visible;
+                            color: @blue;
+                        }
+                    }
+                }
+            }
+        }
+
+        &:last-child {
+            border-bottom-color: transparent;
+        }
+
+        &:hover {
+            background: #f7f7f7;
+
+            .remove {
+                background: @red;
+                .letterpress();
+            }
+        }
+    }
+}
+.custom-todo-wrapper {
+    .custom-form {
+        display: flex;
+        margin-bottom: 20px;
+
+        .form-control {
+            flex: 1 auto;
+        }
+        .btn {
+            flex: 0 auto;
+            margin-left: 15px;
+        }
+    }
+    .todolist {
+        padding: 5px 0 10px;
+
+        .title {
+            margin: 15px 20px;
+            font-size: 16px;
+            font-weight: 300;
+            color: #888;
         }
     }
 }

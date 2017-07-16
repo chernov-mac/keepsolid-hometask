@@ -60,7 +60,7 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 1);
+/******/ 	return __webpack_require__(__webpack_require__.s = 2);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -388,12 +388,156 @@ class Autocomplete {
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
+/*
+*    JavaScript Autocomplete
+*    Author: Vladimir Chernov
+*    For KeepSolid Summer Internship 2017
+*/
+/*jslint esversion: 6 */
+
+class ToDoListItem {
+
+	constructor(text, complete, options) {
+
+		this.options = options;
+
+		this.elem = document.createElement('li');
+		this.elem.classList.add('todolist-item');
+		if (this.options.editable) { this.elem.classList.add('editable'); }
+
+		this.createButtons();
+		this.createTextBox();
+		this.initHandlers();
+
+		this.text = text;
+		this.complete = complete;
+	}
+
+	get text() {
+		return this._text;
+	}
+
+	set text(value) {
+		this._text = value;
+		this.textValueBox.innerHTML = value;
+		this.input.value = value;
+	}
+
+	get complete() {
+		return this._complete;
+	}
+
+	set complete(value) {
+		this._complete = value;
+
+		if (value) {
+			this.elem.classList.add('complete');
+			this.checkbox.checked = true;
+		} else {
+			this.elem.classList.remove('complete');
+			this.checkbox.checked = false;
+		}
+	}
+
+	createButtons() {
+		this.removeBtn = document.createElement('div');
+		this.removeBtn.classList.add('todolist-item--remove');
+		this.removeBtn.innerHTML = this.options.removeBtnText;
+
+		this.checkbox = document.createElement('input');
+		this.checkbox.type = 'checkbox';
+
+		this.checkboxLabel = document.createElement('label')
+		this.checkboxLabel.classList.add('todolist-item--complete');
+		this.checkboxLabel.appendChild(this.checkbox);
+
+		this.elem.appendChild(this.checkboxLabel);
+
+		if (this.options.removable) {
+			this.elem.appendChild(this.removeBtn);
+		}
+	}
+
+	createTextBox() {
+		this.textValueBox = document.createElement('div');
+		this.textValueBox.classList.add('value');
+
+		this.textBox = document.createElement('div');
+		this.textBox.classList.add('todolist-item--text');
+		this.textBox.appendChild(this.textValueBox);
+
+		this.input = document.createElement('input');
+		this.input.type = 'text';
+
+		this.editValueBox = document.createElement('div');
+		this.editValueBox.classList.add('form-control');
+		this.editValueBox.classList.add('edit-value');
+		this.editValueBox.appendChild(this.input);
+
+		this.elem.appendChild(this.textBox);
+
+		if (this.options.editable) {
+			this.textBox.appendChild(this.editValueBox);
+		}
+	}
+
+	initHandlers() {
+		this.checkboxLabel.addEventListener('click', this.toggleComplete.bind(this));
+		document.addEventListener('click', this.onBlur.bind(this));
+
+		if (this.options.editable) {
+			this.textBox.addEventListener('click', this.onEdit.bind(this));
+		}
+		if (this.options.removable) {
+			this.removeBtn.addEventListener('click', this.onRemove.bind(this));
+		}
+	}
+
+	toggleComplete() {
+		this.complete = !this.complete;
+	}
+
+	onRemove() {
+		this.elem.remove();
+	}
+
+	onEdit() {
+		this.elem.classList.add('active');
+		this.input.focus();
+	}
+
+	onBlur() {
+		if (event.target != this.textBox && event.target != this.textValueBox && event.target != this.input) {
+			this.elem.classList.remove('active');
+
+			if (this.input.value) {
+				this.text = this.input.value;
+			} else {
+				this.input.value = this.text;
+			}
+		}
+	}
+
+}
+/* harmony export (immutable) */ __webpack_exports__["a"] = ToDoListItem;
+
+
+
+/***/ }),
+/* 2 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__autocomplete_js__ = __webpack_require__(0);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__chips_js__ = __webpack_require__(2);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__chips_js__ = __webpack_require__(3);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__todoListItem_js__ = __webpack_require__(1);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__todoList_js__ = __webpack_require__(4);
 /*jslint esversion: 6 */
 /*jslint node: true */
-/*global document, alert, fetch, Autocomplete, Chips, countriesData*/
+/*global document, alert, fetch, Autocomplete, Chips, ToDoList, countriesData, todoData*/
+
+
 
 
 
@@ -401,17 +545,16 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 // TODO: add JS Doc
 
-let autocompleteInputs = document.querySelectorAll('.present-autocomplete');
-let chipsInputs = document.querySelectorAll('.present-chips');
+/* AUTOCOMPLETE */
 
+let autocompleteInputs = document.querySelectorAll('.present-autocomplete');
 autocompleteInputs = Array.prototype.slice.call(autocompleteInputs);
-chipsInputs = Array.prototype.slice.call(chipsInputs);
 
 autocompleteInputs.forEach(curInput => {
     const dataSource = curInput.dataset.src;
     curInput.parentNode.classList.add('loading'); // preloader
 
-    getData(dataSource, curInput).then((result) => {
+    getAutocompleteData(dataSource, curInput).then((result) => {
         const data = Object.keys(result).map(key => result[key]);
 
         new __WEBPACK_IMPORTED_MODULE_0__autocomplete_js__["a" /* Autocomplete */](curInput, data, {
@@ -423,11 +566,16 @@ autocompleteInputs.forEach(curInput => {
     });
 });
 
+/* CHIPS */
+
+let chipsInputs = document.querySelectorAll('.present-chips');
+chipsInputs = Array.prototype.slice.call(chipsInputs);
+
 chipsInputs.forEach(curInput => {
     const dataSource = curInput.dataset.src;
     curInput.parentNode.classList.add('loading'); // preloader
 
-    getData(dataSource, curInput).then((result) => {
+    getAutocompleteData(dataSource, curInput).then((result) => {
         const data = Object.keys(result).map(key => result[key]);
 
         new __WEBPACK_IMPORTED_MODULE_1__chips_js__["a" /* Chips */](curInput, data, {
@@ -439,7 +587,42 @@ chipsInputs.forEach(curInput => {
     });
 });
 
-function getData(dataString, curInput) {
+/* TODOLIST */
+
+let todos = document.querySelector('.presentation#todolist');
+
+getToDoData('todo').then((data) => {
+    let defaultList = new __WEBPACK_IMPORTED_MODULE_3__todoList_js__["a" /* ToDoList */](todos.querySelector('#todolist-default'), data);
+    let customList = new __WEBPACK_IMPORTED_MODULE_3__todoList_js__["a" /* ToDoList */](todos.querySelector('#todolist-custom'), data, {
+        addInputPlaceholder: 'What we must learn?',
+        addForm: {
+            form: document.querySelector('.custom-form'),
+            input: document.querySelector('.custom-form input'),
+            submitBtn: document.querySelector('.custom-form .btn'),
+        },
+        removeBtnText: '<div class="remove">&times;</div>',
+        onAdd: (status) => {
+            customList.addForm.submitBtn.classList.remove('success', 'error');
+            if (status) {
+                customList.addForm.submitBtn.classList.add('success');
+            } else {
+                customList.addForm.submitBtn.classList.add('error');
+            }
+            setTimeout(function () {
+                customList.addForm.submitBtn.classList.remove('success', 'error');
+            }, 2000);
+        }
+    });
+    let disabledList = new __WEBPACK_IMPORTED_MODULE_3__todoList_js__["a" /* ToDoList */](todos.querySelector('#todolist-disabled'), data, {
+        allowAdding: false,
+        editable: false,
+        removable: false
+    });
+});
+
+/* FUNCTIONS */
+
+function getAutocompleteData(dataString, curInput) {
     switch (dataString) {
         case 'countries-cors':
             return fetch('https://crossorigin.me/http://country.io/names.json', {
@@ -456,9 +639,15 @@ function getData(dataString, curInput) {
     }
 }
 
+function getToDoData(dataString, todolist) {
+    return new Promise((resolve, reject) => {
+        resolve(todoData);
+    });
+}
+
 
 /***/ }),
-/* 2 */
+/* 3 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -470,6 +659,8 @@ function getData(dataString, curInput) {
 */
 /*jslint esversion: 6 */
 
+
+
 const ChipsDefaults = {
 	maxChipsNumber: 4, // 0 - without limit
 	maxChipsText: 'Maximum number of chips reached.',
@@ -480,7 +671,6 @@ const ChipsDefaults = {
 	toggleOnSelect: false // override selectOnlyOnce (as false)
 };
 /* unused harmony export ChipsDefaults */
-
 
 
 class Chips extends __WEBPACK_IMPORTED_MODULE_0__autocomplete_js__["a" /* Autocomplete */] {
@@ -650,6 +840,132 @@ class Chips extends __WEBPACK_IMPORTED_MODULE_0__autocomplete_js__["a" /* Autoco
 
 }
 /* harmony export (immutable) */ __webpack_exports__["a"] = Chips;
+
+
+
+/***/ }),
+/* 4 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__todoListItem_js__ = __webpack_require__(1);
+/*
+*    JavaScript Autocomplete
+*    Author: Vladimir Chernov
+*    For KeepSolid Summer Internship 2017
+*/
+/*jslint esversion: 6 */
+
+
+
+const ToDoListDefault = {
+	editable: true,
+	removable: true,
+	removeBtnText: '&times;',
+	allowAdding: true,
+	addInputPlaceholder: 'To do:',
+	/* by default if addForm is not set new form will be automatically created
+	* and added into listElement.parentNode before listElement */
+	addForm: {
+		form: '', // DOM Element
+		input: '', // DOM Element
+		submitBtn: '' // DOM Element
+	}
+};
+/* unused harmony export ToDoListDefault */
+
+
+class ToDoList {
+
+	constructor(list, data, options) {
+
+		this.options = Object.assign({}, ToDoListDefault, options);
+
+		this.listElement = list; // DOM Element
+		this.todoList = []; // data is set in setList(data) {}
+		this.addForm = {}; // contains .form, .input and .submitBtn DOM Elements
+
+		this.setList(data);
+		if (this.options.allowAdding) { this.createAddingForm(); }
+
+		this.initHandlers();
+	}
+
+	setList(data) {
+		data.forEach((todo) => {
+			let item = new __WEBPACK_IMPORTED_MODULE_0__todoListItem_js__["a" /* ToDoListItem */](todo.text, todo.complete, this.options);
+			this.add(item);
+		});
+	}
+
+	createAddingForm() {
+		if (this.options.addForm.form && this.options.addForm.input && this.options.addForm.submitBtn) {
+			// set from options if is set
+			this.addForm.form = this.options.addForm.form;
+			this.addForm.input = this.options.addForm.input;
+			this.addForm.submitBtn = this.options.addForm.submitBtn;
+		} else {
+			// create new if is not set
+			this.addForm.input = document.createElement('input');
+			this.addForm.input.type = 'text';
+
+			this.addForm.fc = document.createElement('div');
+			this.addForm.fc.classList.add('form-control');
+			this.addForm.fc.appendChild(this.addForm.input);
+
+			this.addForm.submitBtn = document.createElement('button');
+			this.addForm.submitBtn.type = 'submit';
+			this.addForm.submitBtn.innerHTML = 'Submit';
+			this.addForm.submitBtn.classList.add('btn');
+
+			this.addForm.form = document.createElement('form');
+			this.addForm.form.classList.add('todolist--add-form');
+			this.addForm.form.appendChild(this.addForm.fc);
+			this.addForm.form.appendChild(this.addForm.submitBtn);
+
+			this.listElement.parentNode.insertBefore(this.addForm.form, this.listElement);
+		}
+		this.addForm.input.placeholder = this.options.addInputPlaceholder;
+	}
+
+	initHandlers() {
+		if (this.options.allowAdding) {
+			this.addForm.form.addEventListener('submit', this.checkValue.bind(this));
+		}
+		this.todoList.forEach(item => {
+			if (this.options.removable) {
+				item.removeBtn.addEventListener('click', this.removeTodo.bind(this, item));
+			}
+		});
+	}
+
+	removeTodo(item) {
+		let index = this.todoList.indexOf(item);
+		this.todoList.splice(index, 1);
+	}
+
+	add(item) {
+		this.listElement.appendChild(item.elem);
+		this.todoList.push(item);
+	}
+
+	checkValue(event) {
+		event.preventDefault();
+
+		let value = this.addForm.input.value;
+		if (value) {
+			let item = new __WEBPACK_IMPORTED_MODULE_0__todoListItem_js__["a" /* ToDoListItem */](this.addForm.input.value, false, this.options);
+			this.add(item);
+			this.options.onAdd && this.options.onAdd.call(this, true);
+		} else {
+			this.options.onAdd && this.options.onAdd.call(this, false);
+		}
+
+		this.addForm.input.value = '';
+	}
+
+}
+/* harmony export (immutable) */ __webpack_exports__["a"] = ToDoList;
 
 
 

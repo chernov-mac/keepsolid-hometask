@@ -5,6 +5,8 @@
 */
 /*jslint esversion: 6 */
 
+import { Autocomplete, AutocompleteDefaults } from "./autocomplete.js";
+
 export const ChipsDefaults = {
 	maxChipsNumber: 4, // 0 - without limit
 	maxChipsText: 'Maximum number of chips reached.',
@@ -15,7 +17,6 @@ export const ChipsDefaults = {
 	toggleOnSelect: false // override selectOnlyOnce (as false)
 };
 
-import { Autocomplete, AutocompleteDefaults } from "./autocomplete.js";
 export class Chips extends Autocomplete {
 
 	constructor(input, data, options) {
