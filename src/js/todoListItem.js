@@ -30,8 +30,9 @@ export class ToDoListItem {
 
 	set text(value) {
 		this._text = value;
-		this.textValueBox.innerHTML = value;
-		this.input.value = value;
+		this.textBox.innerHTML = value;
+		// this.textValueBox.innerHTML = value;
+		// this.input.value = value;
 	}
 
 	get complete() {
@@ -70,26 +71,15 @@ export class ToDoListItem {
 	}
 
 	createTextBox() {
-		this.textValueBox = document.createElement('div');
-		this.textValueBox.classList.add('value');
-
 		this.textBox = document.createElement('div');
 		this.textBox.classList.add('todolist-item--text');
-		this.textBox.appendChild(this.textValueBox);
-
-		this.input = document.createElement('input');
-		this.input.type = 'text';
-
-		this.editValueBox = document.createElement('div');
-		this.editValueBox.classList.add('form-control');
-		this.editValueBox.classList.add('edit-value');
-		this.editValueBox.appendChild(this.input);
+		if (this.options.singleLine) {
+			this.textBox.classList.add('single-line');
+		}
 
 		this.elem.appendChild(this.textBox);
 
-		if (this.options.editable) {
-			this.textBox.appendChild(this.editValueBox);
-		}
+		this.textBox.setAttribute('contenteditable', this.options.editable);
 	}
 
 	initHandlers() {
@@ -123,17 +113,17 @@ export class ToDoListItem {
 
 	onEdit() {
 		this.elem.classList.add('active');
-		this.input.focus();
+		this.textBox.focus();
 	}
 
 	onBlur() {
-		if (event.target != this.textBox && event.target != this.textValueBox && event.target != this.input) {
+		if (event.target != this.textBox) {
 			this.elem.classList.remove('active');
 
-			if (this.input.value) {
-				this.text = this.input.value;
+			if (this.textBox.innerHTML) {
+				this.text = this.textBox.innerHTML;
 			} else {
-				this.input.value = this.text;
+				this.textBox.innerHTML = this.text;
 			}
 		}
 	}

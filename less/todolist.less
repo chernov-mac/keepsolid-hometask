@@ -18,31 +18,33 @@
 			flex: 1 0px;
 			order: 2;
 			position: relative;
-			overflow: hidden;
-			white-space: nowrap;
-			text-overflow: ellipsis;
 
-			.value, .edit-value {
-				display: inline-block;
-				height: 38px;
-			}
-			.value {
-				z-index: 1;
-			}
-			.edit-value {
-				visibility: hidden;
-				position: absolute;
-				top: 0;
-				left: 0;
-				right: 0;
-				width: 100%;
-				z-index: 2;
+			// .value, .edit-value {
+			// 	display: inline-block;
+			// 	height: 38px;
+			// }
+			// .value {
+			// 	z-index: 1;
+			// }
+			// .edit-value {
+			// 	visibility: hidden;
+			// 	position: absolute;
+			// 	top: 0;
+			// 	left: 0;
+			// 	right: 0;
+			// 	width: 100%;
+			// 	z-index: 2;
+			//
+			// 	input {
+            //         width: 100%;
+            //     }
+			// }
 
-				input {
-                    width: 100%;
-                }
+			&.single-line {
+				overflow: hidden;
+				white-space: nowrap;
+				text-overflow: ellipsis;
 			}
-
 			&:hover {
 				cursor: text;
 			}
@@ -72,9 +74,7 @@
 		&.complete {
 			.todolist-item {
 				&--text {
-					.value {
-						text-decoration: line-through;
-					}
+					text-decoration: line-through;
 				}
 			}
 		}

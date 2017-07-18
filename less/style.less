@@ -393,23 +393,13 @@ p {
             }
         }
         &--text {
-			.value,
-            .edit-value input {
-                padding: 10px 10px;
-				font-family: 'Helvetica';
-				font-weight: 300;
-				font-size: 14px;
-				line-height: 18px;
-				letter-spacing: 0.03em;
-			}
-            .edit-value {
-                box-shadow: none;
-                background: transparent;
-
-                input {
-                    padding-right: 30px;
-                }
-            }
+            padding: 10px 10px;
+            font-family: 'Helvetica';
+            font-weight: 300;
+            font-size: 14px;
+            line-height: 18px;
+            letter-spacing: 0.03em;
+            outline: none;
         }
         &--remove {
             margin: 0;
@@ -431,44 +421,8 @@ p {
         }
 
         &.editable {
-
-            .todolist-item {
-                &--text {
-                    padding-right: 25px;
-
-                    &:after {
-                        content: '\f040';
-                        position: absolute;
-                        top: 0;
-                        right: 10px;
-                        bottom: 0;
-                        display: inline-block;
-                        color: #888;
-                        line-height: 36px;
-                        vertical-align: middle;
-                        visibility: hidden;
-                        z-index: 3;
-                        .fa-mixin;
-                    }
-                    &:hover {
-                        &:after {
-                            visibility: visible;
-                        }
-                    }
-                }
-            }
-
             &.active {
                 border-bottom-color: @blue;
-
-                .todolist-item {
-                    &--text {
-                        &:after {
-                            visibility: visible;
-                            color: @blue;
-                        }
-                    }
-                }
             }
         }
 

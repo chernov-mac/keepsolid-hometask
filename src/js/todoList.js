@@ -9,6 +9,7 @@ import { ToDoListItem } from "./todoListItem.js";
 
 export const ToDoListDefault = {
 	editable: true,
+	singleLine: true,
 	removable: true,
 	removeBtnText: '&times;',
 	allowAdding: true,
@@ -16,9 +17,9 @@ export const ToDoListDefault = {
 	/* by default if addForm is not set new form will be automatically created
 	* and added into listElement.parentNode before listElement */
 	addForm: {
-		form: '', // DOM Element
-		input: '', // DOM Element
-		submitBtn: '' // DOM Element
+		form: null, // DOM Element
+		input: null, // DOM Element
+		submitBtn: null // DOM Element
 	}
 };
 
