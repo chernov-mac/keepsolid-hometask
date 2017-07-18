@@ -66,12 +66,14 @@ getToDoData('todo').then((data) => {
             submitBtn: document.querySelector('.custom-form .btn'),
         },
         removeBtnText: '<div class="remove">&times;</div>',
-        onAdd: (status) => {
+        onAddTodo: (item) => {
             customList.addForm.submitBtn.classList.remove('success', 'error');
-            if (status) {
+            if (item) {
                 customList.addForm.submitBtn.classList.add('success');
+                console.log('Item with text \'' + item.text + '\' created successfully! Default complete status is: ' + item.complete + '\'.');
             } else {
                 customList.addForm.submitBtn.classList.add('error');
+                console.log('Cannot create item with text \'' + document.querySelector('.custom-form input').value + '\'.');
             }
             setTimeout(function () {
                 customList.addForm.submitBtn.classList.remove('success', 'error');

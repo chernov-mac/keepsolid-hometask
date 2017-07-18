@@ -7,9 +7,10 @@
 
 export class ToDoListItem {
 
-	constructor(text, complete, options) {
+	constructor(text, complete, listContainer) {
 
-		this.options = options;
+		this.listContainer = listContainer;
+		this.options = listContainer.options;
 
 		this.elem = document.createElement('li');
 		this.elem.classList.add('todolist-item');
@@ -109,6 +110,15 @@ export class ToDoListItem {
 
 	onRemove() {
 		this.elem.remove();
+
+		// dispatch event for handling by ToDoList class
+		var removeTodo = new CustomEvent("removeTodo", {
+			bubbles: true,
+			detail: {
+				item: this
+			}
+		});
+		this.listContainer.listElement.dispatchEvent(removeTodo);
 	}
 
 	onEdit() {
