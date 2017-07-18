@@ -8,5 +8,6 @@ module.exports = {
 	output: {
 		path: PATHS.dist,
 		filename: 'bundle.js'
-	}
+	},
+	devtool: '#source-map'
 };
