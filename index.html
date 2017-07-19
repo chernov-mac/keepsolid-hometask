@@ -147,8 +147,11 @@
                 <h3>Options:</h3>
                 <code>
                     const TodoListBuilderDefault = {<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;creator: {<br>
+                    	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;form: null, // DOM Element form, must be submitted to add new list<br>
+                    	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;input: null // DOM Element input, unnecessary option<br>
+                    	&nbsp;&nbsp;&nbsp;&nbsp;},<br>
                         &nbsp;&nbsp;&nbsp;&nbsp;outerClasses: null, // string of classes, e.g. '.my.outer&gt;.nested'<br>
-                    	&nbsp;&nbsp;&nbsp;&nbsp;creator: null, // DOM Element that will add new empty list<br>
                     	&nbsp;&nbsp;&nbsp;&nbsp;defaultTitle: 'New TodoList' // override TodoList.options.title<br>
                     };
                 </code>
@@ -156,15 +159,18 @@
             <div class="examples">
                 <h3>Desk:</h3>
                 <div class="row-24">
-                    <div class="col xxs-24 md-12 lg-8 offset-md-6 offset-lg-8">
-                        <button class="btn btn-add btn-icon blue">
-                            <span class="text">Add TodoList</span>
-                            <span class="icon">
-                                <span class="fa fa-plus"></span>
-                                <span class="fa fa-check success"></span>
-                                <span class="fa fa-remove error"></span>
-                            </span>
-                        </button>
+                    <div class="col xxs-24 md-12 lg-10 offset-md-6 offset-lg-7">
+                        <form class="custom-form">
+                            <div class="form-control">
+                                <input type="text" placeholder="New TodoList">
+                            </div>
+                            <button type="submit" class="btn btn-add btn-icon blue">
+                                <span class="text">Add TodoList</span>
+                                <span class="icon">
+                                    <span class="fa fa-plus"></span>
+                                </span>
+                            </button>
+                        </form>
                     </div>
                 </div>
                 <div class="row-24" id="todo-desk"></div>

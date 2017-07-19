@@ -60,7 +60,7 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 2);
+/******/ 	return __webpack_require__(__webpack_require__.s = 3);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -544,354 +544,6 @@ class TodoListItem {
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__autocomplete_js__ = __webpack_require__(0);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__chips_js__ = __webpack_require__(3);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__todoListItem_js__ = __webpack_require__(1);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__todoList_js__ = __webpack_require__(4);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__todoListBuilder_js__ = __webpack_require__(5);
-/*jslint esversion: 6 */
-/*jslint node: true */
-/*global document, alert, fetch, Autocomplete, Chips, TodoList, countriesData, todoData*/
-
-
-
-
-
-
-
-
-// TODO: add JS Doc
-
-/* AUTOCOMPLETE */
-
-let autocompleteInputs = document.querySelectorAll('.present-autocomplete');
-autocompleteInputs = Array.prototype.slice.call(autocompleteInputs);
-
-autocompleteInputs.forEach(curInput => {
-    const dataSource = curInput.dataset.src;
-    curInput.parentNode.classList.add('loading'); // preloader
-
-    getAutocompleteData(dataSource, curInput).then((result) => {
-        const data = Object.keys(result).map(key => result[key]);
-
-        new __WEBPACK_IMPORTED_MODULE_0__autocomplete_js__["a" /* Autocomplete */](curInput, data, {
-            onSelect: (value) => {
-                curInput.value = value;
-                alert(value);
-            }
-        });
-    });
-});
-
-/* CHIPS */
-
-let chipsInputs = document.querySelectorAll('.present-chips');
-chipsInputs = Array.prototype.slice.call(chipsInputs);
-
-chipsInputs.forEach(curInput => {
-    const dataSource = curInput.dataset.src;
-    curInput.parentNode.classList.add('loading'); // preloader
-
-    getAutocompleteData(dataSource, curInput).then((result) => {
-        const data = Object.keys(result).map(key => result[key]);
-
-        new __WEBPACK_IMPORTED_MODULE_1__chips_js__["a" /* Chips */](curInput, data, {
-            onSelect: (result) => {
-                let str = '<span>' + result.join('</span>, <span>') + '</span>';
-                document.querySelector('.result[data-for="#'+curInput.getAttribute('id')+'"]').innerHTML = str;
-            }
-        });
-    });
-});
-
-/* TODOLIST */
-
-var todos = document.querySelector('.presentation#todolist');
-
-getToDoData('todo').then((data) => {
-    let defaultList = new __WEBPACK_IMPORTED_MODULE_3__todoList_js__["a" /* TodoList */](todos.querySelector('#todolist-default'), data, {
-        customAddForm: document.querySelector('.custom-form'),
-        addInputPlaceholder: 'What we must learn?',
-        onAddTodo: onAddTodo
-    });
-    let customList = new __WEBPACK_IMPORTED_MODULE_3__todoList_js__["a" /* TodoList */](todos.querySelector('#todolist-custom'), data, {
-        removeBtnText: '<div class="remove">&times;</div>',
-        addIconText: '<span class="fa fa-plus-circle"></span>',
-        title: 'Summer education',
-        tools: true
-    });
-    let disabledList = new __WEBPACK_IMPORTED_MODULE_3__todoList_js__["a" /* TodoList */](todos.querySelector('#todolist-disabled'), data, {
-        allowAdding: false,
-        editable: false,
-        removable: false
-    });
-});
-
-/* TODOLIST BUILDER */
-
-getToDoData('todo').then((data) => {
-    let deskElement = document.querySelector('#todo-desk');
-    let existingTodoLists = [];
-
-    existingTodoLists.push({
-        title: 'Summer education',
-        data: data
-    });
-    existingTodoLists.push({
-        data: data
-    });
-
-    let desk = new __WEBPACK_IMPORTED_MODULE_4__todoListBuilder_js__["a" /* TodoListBuilder */](deskElement, {
-        existingTodoLists: existingTodoLists,
-        outerClasses: '.col.xxs-24.md-12.lg-8>.card.todolist',
-        creator: document.querySelector('#todolist-builder .btn-add')
-    });
-});
-
-/* FUNCTIONS */
-
-function onAddTodo(item) {
-    let btn = document.querySelector('.custom-form .btn-icon');
-    btn.classList.remove('success', 'error');
-    if (item) {
-        btn.classList.add('success');
-        console.log('Item with text \'' + item.text + '\' created successfully! Default complete status is: ' + item.complete + '\'.');
-    } else {
-        btn.classList.add('error');
-        console.log('Cannot create item with text \'' + document.querySelector('.custom-form input').value + '\'.');
-    }
-    setTimeout(function () {
-        btn.classList.remove('success', 'error');
-    }, 2000);
-}
-
-function getAutocompleteData(dataString, curInput) {
-    switch (dataString) {
-        case 'countries-cors':
-            return fetch('https://crossorigin.me/http://country.io/names.json', {
-                mode: 'cors',
-            }).then(function(result){
-                curInput.parentNode.classList.remove('loading');
-                return result.json();
-            });
-        default:
-            curInput.parentNode.classList.remove('loading');
-            return new Promise((resolve, reject) => {
-                resolve(countriesData);
-            });
-    }
-}
-
-function getToDoData(dataString, todolist) {
-    return new Promise((resolve, reject) => {
-        resolve(todoData);
-    });
-}
-
-
-/***/ }),
-/* 3 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__autocomplete_js__ = __webpack_require__(0);
-/*
-*    JavaScript Autocomplete
-*    Author: Vladimir Chernov
-*    For KeepSolid Summer Internship 2017
-*/
-/*jslint esversion: 6 */
-
-
-
-const ChipsDefaults = {
-	maxChipsNumber: 4, // 0 - without limit
-	maxChipsText: 'Maximum number of chips reached.',
-	isSelectedText: 'This option is already selected.',
-	selectOnlyOnce: true,
-	removable: true,
-	removeBtnText: '&times;',
-	toggleOnSelect: false // override selectOnlyOnce (as false)
-};
-/* unused harmony export ChipsDefaults */
-
-
-class Chips extends __WEBPACK_IMPORTED_MODULE_0__autocomplete_js__["a" /* Autocomplete */] {
-
-	constructor(input, data, options) {
-
-		super(input, data, options);
-		this.options = Object.assign({}, ChipsDefaults, this.options);
-		this.chips = []; // array of strings
-		this.chipsList = []; // DOM element div.chips-list
-		this.chipsElem; // DOM element div.autocomplete.chips
-
-		this.setChipsList();
-		this.markSelectedOptions();
-	}
-
-	setChipsList() {
-		this.ac.classList.add('chips');
-		this.chipsElem = this.ac;
-		this.chipsList = document.createElement('div');
-		this.chipsList.classList.add('chips-list');
-		this.chipsElem.insertBefore(this.chipsList, this.fc);
-
-		if (this.chips.length) { this.updateChipsList(); }
-
-		this.chipsList.addEventListener('click', this.chipsClick.bind(this));
-	}
-
-	updateChipsList() {
-		this.removeMessage(this.ac, 'error', 'isSelected');
-
-		let removeBtn = this.options.removable ? ' <span class="remove">&times;</span>' : '';
-		let classList = this.options.removable ? 'chip removable' : 'chip';
-
-		let list = '';
-		this.chips.forEach((chip) => {
-			list += `<span class="${classList}" data-val="${chip}">${chip}${removeBtn}</span>`;
-		});
-
-		this.chipsList.innerHTML = list;
-		this.markSelectedOptions();
-		this.isMaxAmount();
-
-		this.options.onSelect && this.options.onSelect.call(this, this.chips);
-	}
-
-	addChip(str) {
-		this.chips[this.chips.length] = str;
-		this.updateChipsList();
-	}
-
-	removeChip(str) {
-		let chip = this.chipsList.querySelector('[data-val="'+str+'"]');
-
-		for(let i = 0; i < this.chips.length; i++) {
-			if (this.chips[i] === str) {
-				this.chips.splice(i, 1);
-				break;
-			}
-		}
-		this.updateChipsList();
-	}
-
-	markSelectedOptions() {
-		let options = this.suggestions.querySelectorAll('.option');
-		options.forEach((option) => {
-			let value = option.getAttribute('data-val');
-			if (this.chips.includes(value)) {
-				this.markOption(option);
-			} else {
-				this.unmarkOption(option);
-			}
-		});
-	}
-
-	markOption(option) {
-		option.classList.add('selected');
-		option.removeAttribute('tabindex');
-	}
-
-	unmarkOption(option) {
-		option.classList.remove('selected');
-		let index = this.resultData.indexOf(option.getAttribute('data-val'));
-		option.setAttribute('tabindex', index);
-	}
-
-	toggleMarking(option) {
-		if (option.classList.contains('selected')) {
-			this.unmarkOption(option);
-		} else {
-			this.markOption(option);
-		}
-	}
-
-	isMaxAmount() {
-		if (this.options.maxChipsNumber && this.chips.length >= this.options.maxChipsNumber) {
-			this.showMessage(this.ac, this.chipsList, this.options.maxChipsText, 'error', 'maxChipsNumber');
-			return true;
-		} else {
-			this.removeMessage(this.ac, 'error', 'maxChipsNumber');
-			return false;
-		}
-	}
-
-	selectOption(option) {
-		let str = option.getAttribute('data-val');
-
-		if (!this.isMaxAmount() && this.isAvailable(str)) {
-			this.addChip(str);
-		}
-		this.markSelectedOptions();
-    }
-
-	toggleOption(option) {
-		let str = option.getAttribute('data-val');
-
-		if (!this.isMaxAmount() && this.isAvailable(str)) {
-			this.addChip(str);
-		} else {
-			this.removeChip(str);
-		}
-
-		this.markSelectedOptions();
-	}
-
-	isAvailable(str) {
-		if (this.isSelected(str) && this.options.selectOnlyOnce) {
-			this.showMessage(this.ac, this.chipsList, this.options.isSelectedText, 'error', 'isSelected');
-			return false;
-		}
-		return true;
-	}
-
-	isSelected(str) {
-		return this.chips.includes(str) ? true : false;
-	}
-
-	chipsClick(event) {
-		if (event.target.classList.contains('remove')) {
-			let value = event.target.parentNode.getAttribute('data-val');
-			this.removeChip(value);
-		}
-	}
-
-	onInput() {
-		super.onInput();
-		this.markSelectedOptions();
-	}
-
-	onClose() {
-		super.onClose();
-		this.markSelectedOptions();
-	}
-
-	onSuggestionsClick(event) {
-		this.removeMessage(this.ac, 'error', 'isSelected');
-
-		if (this.suggestions.contains(event.target) && !this.options.toggleOnSelect) {
-			this.selectOption(event.target);
-		} else if (this.suggestions.contains(event.target) && this.options.toggleOnSelect) {
-			this.toggleOption(event.target);
-		}
-
-		this.isMaxAmount();
-		this.input.focus();
-	}
-
-}
-/* harmony export (immutable) */ __webpack_exports__["a"] = Chips;
-
-
-
-/***/ }),
-/* 4 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__todoListItem_js__ = __webpack_require__(1);
 /*
 *    JavaScript Autocomplete
@@ -1129,11 +781,365 @@ class TodoList {
 
 
 /***/ }),
+/* 3 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__autocomplete_js__ = __webpack_require__(0);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__chips_js__ = __webpack_require__(4);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__todoListItem_js__ = __webpack_require__(1);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__todoList_js__ = __webpack_require__(2);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__todoListBuilder_js__ = __webpack_require__(5);
+/*jslint esversion: 6 */
+/*jslint node: true */
+/*global document, alert, fetch, Autocomplete, Chips, TodoList, countriesData, todoData*/
+
+
+
+
+
+
+
+
+// TODO: add JS Doc
+
+/* AUTOCOMPLETE */
+
+let autocompleteInputs = document.querySelectorAll('.present-autocomplete');
+autocompleteInputs = Array.prototype.slice.call(autocompleteInputs);
+
+autocompleteInputs.forEach(curInput => {
+    const dataSource = curInput.dataset.src;
+    curInput.parentNode.classList.add('loading'); // preloader
+
+    getAutocompleteData(dataSource, curInput).then((result) => {
+        const data = Object.keys(result).map(key => result[key]);
+
+        new __WEBPACK_IMPORTED_MODULE_0__autocomplete_js__["a" /* Autocomplete */](curInput, data, {
+            onSelect: (value) => {
+                curInput.value = value;
+                alert(value);
+            }
+        });
+    });
+});
+
+/* CHIPS */
+
+let chipsInputs = document.querySelectorAll('.present-chips');
+chipsInputs = Array.prototype.slice.call(chipsInputs);
+
+chipsInputs.forEach(curInput => {
+    const dataSource = curInput.dataset.src;
+    curInput.parentNode.classList.add('loading'); // preloader
+
+    getAutocompleteData(dataSource, curInput).then((result) => {
+        const data = Object.keys(result).map(key => result[key]);
+
+        new __WEBPACK_IMPORTED_MODULE_1__chips_js__["a" /* Chips */](curInput, data, {
+            onSelect: (result) => {
+                let str = '<span>' + result.join('</span>, <span>') + '</span>';
+                document.querySelector('.result[data-for="#'+curInput.getAttribute('id')+'"]').innerHTML = str;
+            }
+        });
+    });
+});
+
+/* TODOLIST */
+
+var todos = document.querySelector('.presentation#todolist');
+
+getToDoData('todo').then((data) => {
+    let defaultList = new __WEBPACK_IMPORTED_MODULE_3__todoList_js__["a" /* TodoList */](todos.querySelector('#todolist-default'), data, {
+        customAddForm: document.querySelector('.custom-form'),
+        addInputPlaceholder: 'What we must learn?',
+        onAddTodo: onAddTodo
+    });
+    let customList = new __WEBPACK_IMPORTED_MODULE_3__todoList_js__["a" /* TodoList */](todos.querySelector('#todolist-custom'), data, {
+        removeBtnText: '<div class="remove">&times;</div>',
+        addIconText: '<span class="fa fa-plus-circle"></span>',
+        title: 'Summer education',
+        tools: true
+    });
+    let disabledList = new __WEBPACK_IMPORTED_MODULE_3__todoList_js__["a" /* TodoList */](todos.querySelector('#todolist-disabled'), data, {
+        allowAdding: false,
+        editable: false,
+        removable: false
+    });
+});
+
+/* TODOLIST BUILDER */
+
+getToDoData('todo').then((data) => {
+    let deskElement = document.querySelector('#todo-desk');
+    let existingTodoLists = [];
+
+    existingTodoLists.push({
+        title: 'Summer education',
+        data: data
+    });
+    existingTodoLists.push({
+        title: 'Other education',
+        data: data
+    });
+    existingTodoLists.push({
+        data: data
+    });
+
+    let desk = new __WEBPACK_IMPORTED_MODULE_4__todoListBuilder_js__["a" /* TodoListBuilder */](deskElement, {
+        creator: {
+            form: document.querySelector('#todolist-builder .custom-form')
+        },
+        existingTodoLists: existingTodoLists,
+        outerClasses: '.col.xxs-24.md-12.lg-8>.card.todolist'
+    });
+});
+
+/* FUNCTIONS */
+
+function onAddTodo(item) {
+    let btn = document.querySelector('.custom-form .btn-icon');
+    btn.classList.remove('success', 'error');
+    if (item) {
+        btn.classList.add('success');
+        console.log('Item with text \'' + item.text + '\' created successfully! Default complete status is: ' + item.complete + '\'.');
+    } else {
+        btn.classList.add('error');
+        console.log('Cannot create item with text \'' + document.querySelector('.custom-form input').value + '\'.');
+    }
+    setTimeout(function () {
+        btn.classList.remove('success', 'error');
+    }, 2000);
+}
+
+function getAutocompleteData(dataString, curInput) {
+    switch (dataString) {
+        case 'countries-cors':
+            return fetch('https://crossorigin.me/http://country.io/names.json', {
+                mode: 'cors',
+            }).then(function(result){
+                curInput.parentNode.classList.remove('loading');
+                return result.json();
+            });
+        default:
+            curInput.parentNode.classList.remove('loading');
+            return new Promise((resolve, reject) => {
+                resolve(countriesData);
+            });
+    }
+}
+
+function getToDoData(dataString, todolist) {
+    return new Promise((resolve, reject) => {
+        resolve(todoData);
+    });
+}
+
+
+/***/ }),
+/* 4 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__autocomplete_js__ = __webpack_require__(0);
+/*
+*    JavaScript Autocomplete
+*    Author: Vladimir Chernov
+*    For KeepSolid Summer Internship 2017
+*/
+/*jslint esversion: 6 */
+
+
+
+const ChipsDefaults = {
+	maxChipsNumber: 4, // 0 - without limit
+	maxChipsText: 'Maximum number of chips reached.',
+	isSelectedText: 'This option is already selected.',
+	selectOnlyOnce: true,
+	removable: true,
+	removeBtnText: '&times;',
+	toggleOnSelect: false // override selectOnlyOnce (as false)
+};
+/* unused harmony export ChipsDefaults */
+
+
+class Chips extends __WEBPACK_IMPORTED_MODULE_0__autocomplete_js__["a" /* Autocomplete */] {
+
+	constructor(input, data, options) {
+
+		super(input, data, options);
+		this.options = Object.assign({}, ChipsDefaults, this.options);
+		this.chips = []; // array of strings
+		this.chipsList = []; // DOM element div.chips-list
+		this.chipsElem; // DOM element div.autocomplete.chips
+
+		this.setChipsList();
+		this.markSelectedOptions();
+	}
+
+	setChipsList() {
+		this.ac.classList.add('chips');
+		this.chipsElem = this.ac;
+		this.chipsList = document.createElement('div');
+		this.chipsList.classList.add('chips-list');
+		this.chipsElem.insertBefore(this.chipsList, this.fc);
+
+		if (this.chips.length) { this.updateChipsList(); }
+
+		this.chipsList.addEventListener('click', this.chipsClick.bind(this));
+	}
+
+	updateChipsList() {
+		this.removeMessage(this.ac, 'error', 'isSelected');
+
+		let removeBtn = this.options.removable ? ' <span class="remove">&times;</span>' : '';
+		let classList = this.options.removable ? 'chip removable' : 'chip';
+
+		let list = '';
+		this.chips.forEach((chip) => {
+			list += `<span class="${classList}" data-val="${chip}">${chip}${removeBtn}</span>`;
+		});
+
+		this.chipsList.innerHTML = list;
+		this.markSelectedOptions();
+		this.isMaxAmount();
+
+		this.options.onSelect && this.options.onSelect.call(this, this.chips);
+	}
+
+	addChip(str) {
+		this.chips[this.chips.length] = str;
+		this.updateChipsList();
+	}
+
+	removeChip(str) {
+		let chip = this.chipsList.querySelector('[data-val="'+str+'"]');
+
+		for(let i = 0; i < this.chips.length; i++) {
+			if (this.chips[i] === str) {
+				this.chips.splice(i, 1);
+				break;
+			}
+		}
+		this.updateChipsList();
+	}
+
+	markSelectedOptions() {
+		let options = this.suggestions.querySelectorAll('.option');
+		options.forEach((option) => {
+			let value = option.getAttribute('data-val');
+			if (this.chips.includes(value)) {
+				this.markOption(option);
+			} else {
+				this.unmarkOption(option);
+			}
+		});
+	}
+
+	markOption(option) {
+		option.classList.add('selected');
+		option.removeAttribute('tabindex');
+	}
+
+	unmarkOption(option) {
+		option.classList.remove('selected');
+		let index = this.resultData.indexOf(option.getAttribute('data-val'));
+		option.setAttribute('tabindex', index);
+	}
+
+	toggleMarking(option) {
+		if (option.classList.contains('selected')) {
+			this.unmarkOption(option);
+		} else {
+			this.markOption(option);
+		}
+	}
+
+	isMaxAmount() {
+		if (this.options.maxChipsNumber && this.chips.length >= this.options.maxChipsNumber) {
+			this.showMessage(this.ac, this.chipsList, this.options.maxChipsText, 'error', 'maxChipsNumber');
+			return true;
+		} else {
+			this.removeMessage(this.ac, 'error', 'maxChipsNumber');
+			return false;
+		}
+	}
+
+	selectOption(option) {
+		let str = option.getAttribute('data-val');
+
+		if (!this.isMaxAmount() && this.isAvailable(str)) {
+			this.addChip(str);
+		}
+		this.markSelectedOptions();
+    }
+
+	toggleOption(option) {
+		let str = option.getAttribute('data-val');
+
+		if (!this.isMaxAmount() && this.isAvailable(str)) {
+			this.addChip(str);
+		} else {
+			this.removeChip(str);
+		}
+
+		this.markSelectedOptions();
+	}
+
+	isAvailable(str) {
+		if (this.isSelected(str) && this.options.selectOnlyOnce) {
+			this.showMessage(this.ac, this.chipsList, this.options.isSelectedText, 'error', 'isSelected');
+			return false;
+		}
+		return true;
+	}
+
+	isSelected(str) {
+		return this.chips.includes(str) ? true : false;
+	}
+
+	chipsClick(event) {
+		if (event.target.classList.contains('remove')) {
+			let value = event.target.parentNode.getAttribute('data-val');
+			this.removeChip(value);
+		}
+	}
+
+	onInput() {
+		super.onInput();
+		this.markSelectedOptions();
+	}
+
+	onClose() {
+		super.onClose();
+		this.markSelectedOptions();
+	}
+
+	onSuggestionsClick(event) {
+		this.removeMessage(this.ac, 'error', 'isSelected');
+
+		if (this.suggestions.contains(event.target) && !this.options.toggleOnSelect) {
+			this.selectOption(event.target);
+		} else if (this.suggestions.contains(event.target) && this.options.toggleOnSelect) {
+			this.toggleOption(event.target);
+		}
+
+		this.isMaxAmount();
+		this.input.focus();
+	}
+
+}
+/* harmony export (immutable) */ __webpack_exports__["a"] = Chips;
+
+
+
+/***/ }),
 /* 5 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__todoList_js__ = __webpack_require__(4);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__todoList_js__ = __webpack_require__(2);
 /*
 *    JavaScript TodoListBuilder
 *    Author: Vladimir Chernov
@@ -1144,8 +1150,11 @@ class TodoList {
 
 
 const TodoListBuilderDefaults = {
+	creator: {
+		form: null, // DOM Element form, must be submitted to add new list
+		input: null // DOM Element input, unnecessary option
+	},
 	outerClasses: null, // string of classes, e.g. '.my.outer>.nested'
-	creator: null, // DOM Element that will add new empty list
 	defaultTitle: 'New TodoList' // override TodoList.options.title
 };
 /* unused harmony export TodoListBuilderDefaults */
@@ -1158,6 +1167,12 @@ class TodoListBuilder {
 		this.options = Object.assign({}, TodoListBuilderDefaults, options);
 		this.desk = desk;
 		this.lists = [];
+
+		if (this.options.creator.form) {
+			this.creator = {};
+			this.creator.form = this.options.creator.form;
+			this.creator.input = this.options.creator.input || this.creator.form.querySelector('input');
+		}
 
 		this.init();
 		this.initEvents();
@@ -1222,14 +1237,17 @@ class TodoListBuilder {
 	}
 
 	initEvents() {
-		if (this.options.creator) {
-			this.options.creator.addEventListener('click', this.onCreateNew.bind(this));
+		if (this.creator) {
+			this.creator.form.addEventListener('submit', this.onCreateNew.bind(this));
 		}
 		this.desk.addEventListener('removeTodoList', this.onRemoveTodoList.bind(this));
 	}
 
-	onCreateNew() {
-		this.addList();
+	onCreateNew(event) {
+		event.preventDefault();
+		this.addList({
+			title: this.creator.input && this.creator.input.value
+		});
 	}
 
 	onRemoveTodoList(event) {

@@ -87,13 +87,19 @@ getToDoData('todo').then((data) => {
         data: data
     });
     existingTodoLists.push({
+        title: 'Other education',
+        data: data
+    });
+    existingTodoLists.push({
         data: data
     });
 
     let desk = new TodoListBuilder(deskElement, {
+        creator: {
+            form: document.querySelector('#todolist-builder .custom-form')
+        },
         existingTodoLists: existingTodoLists,
-        outerClasses: '.col.xxs-24.md-12.lg-8>.card.todolist',
-        creator: document.querySelector('#todolist-builder .btn-add')
+        outerClasses: '.col.xxs-24.md-12.lg-8>.card.todolist'
     });
 });
 
