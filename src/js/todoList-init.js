@@ -1,14 +1,14 @@
 /*jslint esversion: 6 */
 /*jslint node: true */
-/*global document, alert, fetch, todoData, ToDoList*/
+/*global document, alert, fetch, todoData, TodoList*/
 
 'use strict';
 
 let todos = document.querySelector('.presentation#todolist');
 
 getToDoData('todo').then((data) => {
-    let defaultList = new ToDoList(todos.querySelector('#todolist-default'), data);
-    let customList = new ToDoList(todos.querySelector('#todolist-custom'), data, {
+    let defaultList = new TodoList(todos.querySelector('#todolist-default'), data);
+    let customList = new TodoList(todos.querySelector('#todolist-custom'), data, {
         addInputPlaceholder: 'What we must learn?',
         addForm: {
             form: document.querySelector('.custom-form'),
@@ -28,7 +28,7 @@ getToDoData('todo').then((data) => {
             }, 2000);
         }
     });
-    let disabledList = new ToDoList(todos.querySelector('#todolist-disabled'), data, {
+    let disabledList = new TodoList(todos.querySelector('#todolist-disabled'), data, {
         allowAdding: false,
         editable: false,
         removable: false

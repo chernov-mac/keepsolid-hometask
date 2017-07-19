@@ -87,23 +87,26 @@
             </div>
         </section>
         <section class="presentation" id="todolist">
-            <h2>ToDoList</h2>
+            <h2>TodoList</h2>
             <div class="options">
                 <h3>Options:</h3>
                 <code>
-                    const ToDoListDefault = {<br>
-                    	&nbsp;&nbsp;&nbsp;&nbsp;editable: true,<br>
-                    	&nbsp;&nbsp;&nbsp;&nbsp;removable: true,<br>
-                    	&nbsp;&nbsp;&nbsp;&nbsp;removeBtnText: '&times;',<br>
-                    	&nbsp;&nbsp;&nbsp;&nbsp;allowAdding: true,<br>
-                    	&nbsp;&nbsp;&nbsp;&nbsp;addInputPlaceholder: 'To do:',<br>
-                    	&nbsp;&nbsp;&nbsp;&nbsp;/* by default if addForm is not set new form will be automatically created<br>
-                    	&nbsp;&nbsp;&nbsp;&nbsp;* and added into listElement.parentNode before listElement */<br>
-                    	&nbsp;&nbsp;&nbsp;&nbsp;addForm: {<br>
-                    	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;form: null, // DOM Element<br>
-                    	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;input: null, // DOM Element<br>
-                    	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;submitBtn: null // DOM Element<br>
-                    	&nbsp;&nbsp;&nbsp;&nbsp;}<br>
+                    const TodoListDefault = {<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;editable: true,<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;singleLine: true,<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;removable: true,<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;removeBtnText: '<span class="fa fa-times-circle"></span>',<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;allowAdding: true,<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;addIconText: '<span class="fa fa-plus-circle"></span>',<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;addBoxPlaceholder: 'New todo:',<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;customAddForm: null, // DOM Element. Will disable creating adding-item if set<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;title: null,<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;tools: false,<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;toolsText: {<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;remove: '<span class="fa fa-trash"></span>',<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;clear: '<span class="fa fa-times-circle"></span>'<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;},<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;desk: null // DOM Element of main builder element for events assign<br>
                     };
                 </code>
             </div>
@@ -111,35 +114,60 @@
                 <h3>Examples:</h3>
                 <div class="row-24">
                     <div class="col xxs-24 md-12 lg-8">
-                        <h4>Default</h4>
-                        <ul class="todolist" id="todolist-default"></ul>
+                        <h4>As in task</h4>
+                        <form class="custom-form">
+                            <div class="form-control">
+                                <input type="text" placeholder="What we must learn?">
+                            </div>
+                            <button class="btn btn-icon blue">
+                                <span class="text">Submit</span>
+                                <span class="icon">
+                                    <span class="fa fa-plus"></span>
+                                    <span class="fa fa-check success"></span>
+                                    <span class="fa fa-remove error"></span>
+                                </span>
+                            </button>
+                        </form>
+                        <div class="card todolist" id="todolist-default"></div>
                     </div>
                     <div class="col xxs-24 md-12 lg-8">
-                        <h4>Custom form</h4>
-                        <div class="custom-todo-wrapper">
-                            <form class="custom-form">
-                                <div class="form-control">
-                                    <input type="text" placeholder="To do:">
-                                </div>
-                                <button class="btn btn-icon blue">
-                                    <span class="text">Submit</span>
-                                    <span class="icon">
-                                        <span class="fa fa-plus"></span>
-                                        <span class="fa fa-check success"></span>
-                                        <span class="fa fa-remove error"></span>
-                                    </span>
-                                </button>
-                            </form>
-                            <ul class="todolist" id="todolist-custom">
-                                <li class="title">Summer education</li>
-                            </ul>
-                        </div>
+                        <h4>Custom styles, default adding</h4>
+                        <div class="card todolist" id="todolist-custom"></div>
                     </div>
                     <div class="col xxs-24 md-12 lg-8">
                         <h4>Disabled adding, editing, removing</h4>
-                        <ul class="todolist" id="todolist-disabled"></ul>
+                        <div class="card todolist" id="todolist-disabled"></div>
                     </div>
                 </div>
+            </div>
+        </section>
+        <section class="presentation" id="todolist-builder">
+            <h2>TodoListBuilder</h2>
+            <div class="options">
+                <h3>Options:</h3>
+                <code>
+                    const TodoListBuilderDefault = {<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;outerClasses: null, // string of classes, e.g. '.my.outer&gt;.nested'<br>
+                    	&nbsp;&nbsp;&nbsp;&nbsp;creator: null, // DOM Element that will add new empty list<br>
+                    	&nbsp;&nbsp;&nbsp;&nbsp;defaultTitle: 'New TodoList' // override TodoList.options.title<br>
+                    };
+                </code>
+            </div>
+            <div class="examples">
+                <h3>Desk:</h3>
+                <div class="row-24">
+                    <div class="col xxs-24 md-12 lg-8 offset-md-6 offset-lg-8">
+                        <button class="btn btn-add btn-icon blue">
+                            <span class="text">Add TodoList</span>
+                            <span class="icon">
+                                <span class="fa fa-plus"></span>
+                                <span class="fa fa-check success"></span>
+                                <span class="fa fa-remove error"></span>
+                            </span>
+                        </button>
+                    </div>
+                </div>
+                <div class="row-24" id="todo-desk"></div>
             </div>
         </section>
     </div>

@@ -5,7 +5,7 @@
 */
 /*jslint esversion: 6 */
 
-export class ToDoListItem {
+export class TodoListItem {
 
 	constructor(text, complete, listContainer) {
 
@@ -87,7 +87,7 @@ export class ToDoListItem {
 		document.addEventListener('click', this.onBlur.bind(this));
 
 		if (this.options.editable) {
-			this.textBox.addEventListener('click', this.onEdit.bind(this));
+			this.textBox.addEventListener('focus', this.onEdit.bind(this));
 		}
 		if (this.options.removable) {
 			this.removeBtn.addEventListener('click', this.onRemove.bind(this));
@@ -101,7 +101,7 @@ export class ToDoListItem {
 	onRemove() {
 		this.elem.remove();
 
-		// dispatch event for handling by ToDoList class
+		// dispatch event for handling by TodoList class
 		var removeTodo = new CustomEvent("removeTodo", {
 			bubbles: true,
 			detail: {
@@ -112,20 +112,36 @@ export class ToDoListItem {
 	}
 
 	onEdit() {
+		this.textBox.classList.remove('single-line');
+		// this.placeCaretAtEnd();
 		this.elem.classList.add('active');
-		this.textBox.focus();
 	}
 
 	onBlur() {
 		if (event.target != this.textBox) {
 			this.elem.classList.remove('active');
+			// this.textBox.innerHTML = this.text;
 
 			if (this.textBox.innerHTML) {
 				this.text = this.textBox.innerHTML;
 			} else {
 				this.textBox.innerHTML = this.text;
 			}
+
+			if (this.options.singleLine) {
+				this.textBox.classList.add('single-line');
+			}
 		}
+	}
+
+	placeCaretAtEnd() {
+		var range,selection;
+		range = document.createRange();//Create a range (a range is a like the selection but invisible)
+		range.selectNodeContents(this.textBox);//Select the entire contents of the element with the range
+		range.collapse(false);//collapse the range to the end point. false means collapse to end rather than the start
+		selection = window.getSelection();//get the selection object (allows you to change selection)
+		selection.removeAllRanges();//remove any selections already made
+		selection.addRange(range);//make the range you have just created the visible selection
 	}
 
 }

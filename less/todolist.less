@@ -1,94 +1,113 @@
 // main: style.less
 
 .todolist {
-	display: block;
-	background: #fff;
+	position: relative;
 
-	.todolist-item {
+	&--tools {
+		position: absolute;
+		top: 0;
+		right: 0;
 		display: flex;
-		align-items: center;
 
-		&--complete {
+		.tool {
 			flex: 0 auto;
-			order: 1;
-			display: block;
-			margin: 0 15px 0 0;
 		}
-		&--text {
-			flex: 1 0px;
-			order: 2;
-			position: relative;
+	}
+	&--list {
+		display: block;
+		background: #fff;
 
-			// .value, .edit-value {
-			// 	display: inline-block;
-			// 	height: 38px;
-			// }
-			// .value {
-			// 	z-index: 1;
-			// }
-			// .edit-value {
-			// 	visibility: hidden;
-			// 	position: absolute;
-			// 	top: 0;
-			// 	left: 0;
-			// 	right: 0;
-			// 	width: 100%;
-			// 	z-index: 2;
-			//
-			// 	input {
-            //         width: 100%;
-            //     }
-			// }
+		.todolist-item {
+			display: flex;
+			width: 100%;
+			align-items: center;
 
-			&.single-line {
-				overflow: hidden;
-				white-space: nowrap;
-				text-overflow: ellipsis;
+			&--complete,
+			&--add-icon {
+				flex: 0 auto;
+				order: 1;
+				display: block;
+				margin: 0 15px 0 0;
 			}
-			&:hover {
-				cursor: text;
-			}
-		}
-		&--remove {
-			flex: 0 auto;
-			order: 3;
-			display: block;
-			margin: 0 0 0 15px;
-			text-align: center;
-			cursor: pointer;
-		}
+			&--text {
+				flex: 1 0px;
+				order: 2;
+				position: relative;
+				z-index: 1;
 
-		&.active {
-			.todolist-item {
-				&--text {
-					.value {
-						visibility: hidden;
+				&.single-line {
+					overflow: hidden;
+					white-space: nowrap;
+					text-overflow: ellipsis;
+				}
+				&:hover {
+					cursor: text;
+				}
+			}
+			&--remove {
+				flex: 0 auto;
+				order: 3;
+				display: block;
+				margin: 0 0 0 15px;
+				text-align: center;
+				cursor: pointer;
+			}
+
+			&.add-item {
+				.todolist-item {
+					&--add-icon {
+						text-align: center;
 					}
-					.edit-value {
-						visibility: visible;
+					&--text {
+						width: 100%;
+
+						.adding-box {
+							position: absolute;
+							top: 0;
+							right: 0;
+							bottom: 0;
+							left: 0;
+						}
+						.adding-box {
+							z-index: 2;
+						}
+					}
+
+				}
+			}
+
+			&.active {
+				.todolist-item {
+					&--text {
+						.value {
+							visibility: hidden;
+						}
+						.edit-value {
+							visibility: visible;
+						}
+					}
+				}
+			}
+
+			&.complete {
+				.todolist-item {
+					&--text {
+						text-decoration: line-through;
 					}
 				}
 			}
 		}
+	}
+	&--add-form {
+		display: flex;
 
-		&.complete {
-			.todolist-item {
-				&--text {
-					text-decoration: line-through;
-				}
-			}
+		.form-control {
+			flex: 1 auto;
+			margin-bottom: 20px;
 		}
-	}
-}
-.todolist--add-form {
-	display: flex;
-
-	.form-control {
-		flex: 1 auto;
-		margin-bottom: 20px;
-	}
-	.btn {
-		flex: 0 auto;
-		margin-left: 15px;
+		.btn {
+			flex: 0 auto;
+			margin-left: 15px;
+		}
 	}
 }

@@ -1,12 +1,13 @@
 /*jslint esversion: 6 */
 /*jslint node: true */
-/*global document, alert, fetch, Autocomplete, Chips, ToDoList, countriesData, todoData*/
+/*global document, alert, fetch, Autocomplete, Chips, TodoList, countriesData, todoData*/
 
 'use strict';
 import { Autocomplete, AutocompleteDefaults } from "./autocomplete.js";
 import { Chips, ChipsDefaults } from "./chips.js";
-import { ToDoListItem } from "./todoListItem.js";
-import { ToDoList, ToDoListDefaults } from "./todoList.js";
+import { TodoListItem } from "./todoListItem.js";
+import { TodoList, TodoListDefaults } from "./todoList.js";
+import { TodoListBuilder, TodoListBuilderDefaults } from "./todoListBuilder.js";
 
 // TODO: add JS Doc
 
@@ -54,40 +55,64 @@ chipsInputs.forEach(curInput => {
 
 /* TODOLIST */
 
-let todos = document.querySelector('.presentation#todolist');
+var todos = document.querySelector('.presentation#todolist');
 
 getToDoData('todo').then((data) => {
-    let defaultList = new ToDoList(todos.querySelector('#todolist-default'), data);
-    let customList = new ToDoList(todos.querySelector('#todolist-custom'), data, {
+    let defaultList = new TodoList(todos.querySelector('#todolist-default'), data, {
+        customAddForm: document.querySelector('.custom-form'),
         addInputPlaceholder: 'What we must learn?',
-        addForm: {
-            form: document.querySelector('.custom-form'),
-            input: document.querySelector('.custom-form input'),
-            submitBtn: document.querySelector('.custom-form .btn'),
-        },
-        removeBtnText: '<div class="remove">&times;</div>',
-        onAddTodo: (item) => {
-            customList.addForm.submitBtn.classList.remove('success', 'error');
-            if (item) {
-                customList.addForm.submitBtn.classList.add('success');
-                console.log('Item with text \'' + item.text + '\' created successfully! Default complete status is: ' + item.complete + '\'.');
-            } else {
-                customList.addForm.submitBtn.classList.add('error');
-                console.log('Cannot create item with text \'' + document.querySelector('.custom-form input').value + '\'.');
-            }
-            setTimeout(function () {
-                customList.addForm.submitBtn.classList.remove('success', 'error');
-            }, 2000);
-        }
+        onAddTodo: onAddTodo
     });
-    let disabledList = new ToDoList(todos.querySelector('#todolist-disabled'), data, {
+    let customList = new TodoList(todos.querySelector('#todolist-custom'), data, {
+        removeBtnText: '<div class="remove">&times;</div>',
+        addIconText: '<span class="fa fa-plus-circle"></span>',
+        title: 'Summer education',
+        tools: true
+    });
+    let disabledList = new TodoList(todos.querySelector('#todolist-disabled'), data, {
         allowAdding: false,
         editable: false,
         removable: false
     });
 });
 
+/* TODOLIST BUILDER */
+
+getToDoData('todo').then((data) => {
+    let deskElement = document.querySelector('#todo-desk');
+    let existingTodoLists = [];
+
+    existingTodoLists.push({
+        title: 'Summer education',
+        data: data
+    });
+    existingTodoLists.push({
+        data: data
+    });
+
+    let desk = new TodoListBuilder(deskElement, {
+        existingTodoLists: existingTodoLists,
+        outerClasses: '.col.xxs-24.md-12.lg-8>.card.todolist',
+        creator: document.querySelector('#todolist-builder .btn-add')
+    });
+});
+
 /* FUNCTIONS */
+
+function onAddTodo(item) {
+    let btn = document.querySelector('.custom-form .btn-icon');
+    btn.classList.remove('success', 'error');
+    if (item) {
+        btn.classList.add('success');
+        console.log('Item with text \'' + item.text + '\' created successfully! Default complete status is: ' + item.complete + '\'.');
+    } else {
+        btn.classList.add('error');
+        console.log('Cannot create item with text \'' + document.querySelector('.custom-form input').value + '\'.');
+    }
+    setTimeout(function () {
+        btn.classList.remove('success', 'error');
+    }, 2000);
+}
 
 function getAutocompleteData(dataString, curInput) {
     switch (dataString) {
