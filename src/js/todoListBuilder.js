@@ -8,12 +8,12 @@
 import { TodoList, TodoListDefaults } from "./todoList.js";
 
 export const TodoListBuilderDefaults = {
-	creator: {
+	builder: {
 		form: null, // DOM Element form, must be submitted to add new list
 		input: null // DOM Element input, unnecessary option
 	},
 	outerClasses: null, // string of classes, e.g. '.my.outer>.nested'
-	defaultTitle: 'New TodoList' // override TodoList.options.title
+	todoList: {} // extends todoList default options
 };
 
 export class TodoListBuilder {
@@ -21,13 +21,15 @@ export class TodoListBuilder {
 	constructor(desk, options) {
 
 		this.options = Object.assign({}, TodoListBuilderDefaults, options);
+		this.options.todolist = Object.assign({}, options.todoList);
+
 		this.desk = desk;
 		this.lists = [];
 
-		if (this.options.creator.form) {
-			this.creator = {};
-			this.creator.form = this.options.creator.form;
-			this.creator.input = this.options.creator.input || this.creator.form.querySelector('input');
+		if (this.options.builder.form) {
+			this.builder = {};
+			this.builder.form = this.options.builder.form;
+			this.builder.input = this.options.builder.input || this.builder.form.querySelector('input');
 		}
 
 		this.init();
@@ -52,11 +54,14 @@ export class TodoListBuilder {
 		this.desk.appendChild(outer);
 
 		let newList = {};
-		newList.item = new TodoList(outerDeepest, todoList.data, {
-			title: todoList.title || this.options.defaultTitle,
-			tools: true,
+		let newListOptions = {
+			titleText: todoList.title || this.options.todoList.titleText,
 			desk: this.desk
-		});
+		};
+		newListOptions = Object.assign({}, this.options.todoList, newListOptions);
+		// console.log(newListOptions);
+
+		newList.item = new TodoList(outerDeepest, todoList.data, newListOptions);
 		newList.outer = outer;
 		this.lists.push(newList);
 	}
@@ -93,8 +98,8 @@ export class TodoListBuilder {
 	}
 
 	initEvents() {
-		if (this.creator) {
-			this.creator.form.addEventListener('submit', this.onCreateNew.bind(this));
+		if (this.builder) {
+			this.builder.form.addEventListener('submit', this.onCreateNew.bind(this));
 		}
 		this.desk.addEventListener('removeTodoList', this.onRemoveTodoList.bind(this));
 	}
@@ -102,7 +107,7 @@ export class TodoListBuilder {
 	onCreateNew(event) {
 		event.preventDefault();
 		this.addList({
-			title: this.creator.input && this.creator.input.value
+			title: this.builder.input && this.builder.input.value
 		});
 	}
 

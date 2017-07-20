@@ -5,12 +5,19 @@
 */
 /*jslint esversion: 6 */
 
+export const TodoListItemDefaults = {
+	editable: true,
+	removable: true,
+	singleLine: true,
+	removeBtnText: '<span class="fa fa-times-circle"></span>'
+};
+
 export class TodoListItem {
 
-	constructor(text, complete, listContainer) {
+	constructor(text, complete, options) {
 
-		this.listContainer = listContainer;
-		this.options = listContainer.options;
+		this.parentList = options.parentList;
+		this.options = Object.assign({}, TodoListItemDefaults, options);
 
 		this.elem = document.createElement('li');
 		this.elem.classList.add('todolist-item');
@@ -31,8 +38,6 @@ export class TodoListItem {
 	set text(value) {
 		this._text = value;
 		this.textBox.innerHTML = value;
-		// this.textValueBox.innerHTML = value;
-		// this.input.value = value;
 	}
 
 	get complete() {
@@ -108,7 +113,7 @@ export class TodoListItem {
 				item: this
 			}
 		});
-		this.listContainer.listElement.dispatchEvent(removeTodo);
+		this.parentList.dispatchEvent(removeTodo);
 	}
 
 	onEdit() {

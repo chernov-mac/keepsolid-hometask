@@ -3,11 +3,10 @@
 /*global document, alert, fetch, Autocomplete, Chips, TodoList, countriesData, todoData*/
 
 'use strict';
-import { Autocomplete, AutocompleteDefaults } from "./autocomplete.js";
-import { Chips, ChipsDefaults } from "./chips.js";
-import { TodoListItem } from "./todoListItem.js";
-import { TodoList, TodoListDefaults } from "./todoList.js";
-import { TodoListBuilder, TodoListBuilderDefaults } from "./todoListBuilder.js";
+import { Autocomplete } from "./autocomplete.js";
+import { Chips } from "./chips.js";
+import { TodoList } from "./todoList.js";
+import { TodoListBuilder } from "./todoListBuilder.js";
 
 // TODO: add JS Doc
 
@@ -61,18 +60,20 @@ getToDoData('todo').then((data) => {
     let defaultList = new TodoList(todos.querySelector('#todolist-default'), data, {
         customAddForm: document.querySelector('.custom-form'),
         addInputPlaceholder: 'What we must learn?',
-        onAddTodo: onAddTodo
+        onAddTodo: onAddTodo,
+        tools: false
     });
     let customList = new TodoList(todos.querySelector('#todolist-custom'), data, {
-        removeBtnText: '<div class="remove">&times;</div>',
-        addIconText: '<span class="fa fa-plus-circle"></span>',
-        title: 'Summer education',
-        tools: true
+        titleText: 'Summer education'
     });
     let disabledList = new TodoList(todos.querySelector('#todolist-disabled'), data, {
-        allowAdding: false,
-        editable: false,
-        removable: false
+        readonly: true
+    });
+    let fourth = new TodoList(todos.querySelector('#todolist-fourth'), data, {
+        tools: false,
+        item: {
+            removable: false
+        }
     });
 });
 
@@ -80,26 +81,47 @@ getToDoData('todo').then((data) => {
 
 getToDoData('todo').then((data) => {
     let deskElement = document.querySelector('#todo-desk');
+    let boardElement = document.querySelector('#todo-board');
     let existingTodoLists = [];
 
+    // existingTodoLists.push({
+    //     title: 'Summer education',
+    //     data: data
+    // });
+    // existingTodoLists.push({
+    //     title: 'Other education',
+    //     data: data
+    // });
     existingTodoLists.push({
-        title: 'Summer education',
         data: data
     });
-    existingTodoLists.push({
-        title: 'Other education',
-        data: data
-    });
-    existingTodoLists.push({
-        data: data
-    });
+    console.log('TODOBUILDER');
 
     let desk = new TodoListBuilder(deskElement, {
-        creator: {
-            form: document.querySelector('#todolist-builder .custom-form')
+        builder: {
+            form: document.querySelector('#frs')
         },
         existingTodoLists: existingTodoLists,
-        outerClasses: '.col.xxs-24.md-12.lg-8>.card.todolist'
+        outerClasses: '.col.xxs-24.md-12.lg-8>.card.todolist',
+        todoList: {
+            titleText: 'New List',
+            listItem: {
+                editable: false
+            }
+        }
+    });
+    let board = new TodoListBuilder(boardElement, {
+        builder: {
+            form: document.querySelector('#scd')
+        },
+        existingTodoLists: existingTodoLists,
+        outerClasses: '.col.xxs-24.md-12.lg-8>.card.todolist',
+        todoList: {
+            titleText: 'New List',
+            listItem: {
+                removable: false
+            }
+        }
     });
 });
 

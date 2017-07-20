@@ -5,41 +5,47 @@
 */
 /*jslint esversion: 6 */
 
-import { TodoListItem } from "./todoListItem.js";
+import { TodoListItem, TodoListItemDefaults } from "./todoListItem.js";
 
 export const TodoListDefaults = {
-	editable: true,
-	singleLine: true,
-	removable: true,
-	removeBtnText: '<span class="fa fa-times-circle"></span>',
 	allowAdding: true,
 	addIconText: '<span class="fa fa-plus-circle"></span>',
 	addBoxPlaceholder: 'New todo:',
 	customAddForm: null, // DOM Element. Will disable creating adding-item if set
-	title: null,
-	tools: false,
-	toolsText: {
-		remove: '<span class="fa fa-trash"></span>',
-		clear: '<span class="fa fa-times-circle"></span>'
-	},
-	desk: null // DOM Element of main builder element for events assign
+	titleText: null,
+	titleEditable: true,
+	tools: true,
+	removeToolText: '<span class="fa fa-trash"></span>',
+	clearToolText: '<span class="fa fa-times-circle"></span>',
+	readonly: false,
+	desk: null, // DOM Element of main builder element for events assign
+	listItem: {} // extends todoListItem default options
 };
 
 export class TodoList {
 
-	constructor(element, data, options, desk) {
+	constructor(element, data, options) {
 
 		this.options = Object.assign({}, TodoListDefaults, options);
+		this.options.listItem = Object.assign({}, options.listItem);
+		console.log(this.options);
+		this.options.listItem.parentList = this.listElement;
+		if (this.options.readonly) {
+			this.options.allowAdding = false;
+			this.options.tools = false;
+			this.options.listItem.editable = false;
+			this.options.listItem.removable = false;
+		}
 
 		this.data = data || [];
-		this.todoList = []; // data is set in setList(data) {}
+		this.todoList = []; // contains objects of TodoListItem
 		this.addForm = {}; // contains form with input
 
 		this.listElement = this.createListElement(element);
 		this.setList(this.data);
-		if (this.options.title) {
+		if (this.options.titleText) {
 			this.createTitle();
-			this.title = this.options.title;
+			this.title = this.options.titleText;
 		}
 		if (this.options.tools) { this.createTools(); }
 
@@ -60,7 +66,7 @@ export class TodoList {
 		this.todoList = [];
 		this.listElement.innerHTML = '';
 		data.forEach((todo) => {
-			let item = new TodoListItem(todo.text, todo.complete, this);
+			let item = new TodoListItem(todo.text, todo.complete, this.options.listItem);
 			this.add(item);
 		});
 		if (this.options.allowAdding) { this.setAddingForm(); }
@@ -100,7 +106,7 @@ export class TodoList {
 		this.titleElement = document.createElement('h5');
 		this.titleElement.classList.add('title');
 		this.listElement.parentElement.insertBefore(this.titleElement, this.listElement);
-		if (this.options.editable) {
+		if (this.options.titleEditable) {
 			this.titleElement.setAttribute('contenteditable', 'true');
 		}
 	}
@@ -128,11 +134,11 @@ export class TodoList {
 
 		this.tools.remove = document.createElement('div');
 		this.tools.remove.classList.add('tool', 'remove');
-		this.tools.remove.innerHTML = this.options.toolsText.remove;
+		this.tools.remove.innerHTML = this.options.removeToolText;
 
 		this.tools.clear = document.createElement('div');
 		this.tools.clear.classList.add('tool', 'clear');
-		this.tools.clear.innerHTML = this.options.toolsText.clear;
+		this.tools.clear.innerHTML = this.options.clearToolText;
 
 		this.toolsElement.appendChild(this.tools.clear);
 		this.toolsElement.appendChild(this.tools.remove);
@@ -167,8 +173,9 @@ export class TodoList {
 		} else {
 			this.addElem.classList.remove('active');
 		}
-		if (event.target != this.titleElement && this.options.editable && this.title) {
+		if (event.target != this.titleElement && this.titleText && this.options.titleEditable) {
 			this.title = this.titleElement.innerHTML;
+			console.log(this.title);
 		}
 	}
 
@@ -179,7 +186,7 @@ export class TodoList {
 			item = null;
 
 		if (value) {
-			item = new TodoListItem(value, false, this);
+			item = new TodoListItem(value, false, this.options.listItem, this.listElement);
 			this.add(item);
 			this.clearInput();
 			this.addElem && this.addElem.classList.remove('active');
