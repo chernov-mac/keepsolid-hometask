@@ -60,7 +60,7 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 3);
+/******/ 	return __webpack_require__(__webpack_require__.s = 2);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -388,170 +388,7 @@ class Autocomplete {
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/*
-*    JavaScript Autocomplete
-*    Author: Vladimir Chernov
-*    For KeepSolid Summer Internship 2017
-*/
-/*jslint esversion: 6 */
-
-const TodoListItemDefaults = {
-	editable: true,
-	removable: true,
-	singleLine: true,
-	removeBtnText: '<span class="fa fa-times-circle"></span>'
-};
-/* unused harmony export TodoListItemDefaults */
-
-
-class TodoListItem {
-
-	constructor(text, complete, options) {
-
-		this.parentList = options.parentList;
-		this.options = Object.assign({}, TodoListItemDefaults, options);
-
-		this.elem = document.createElement('li');
-		this.elem.classList.add('todolist-item');
-		if (this.options.editable) { this.elem.classList.add('editable'); }
-
-		this.createButtons();
-		this.createTextBox();
-		this.initHandlers();
-
-		this.text = text;
-		this.complete = complete;
-	}
-
-	get text() {
-		return this._text;
-	}
-
-	set text(value) {
-		this._text = value;
-		this.textBox.innerHTML = value;
-	}
-
-	get complete() {
-		return this._complete;
-	}
-
-	set complete(value) {
-		this._complete = value;
-
-		if (value) {
-			this.elem.classList.add('complete');
-			this.checkbox.checked = true;
-		} else {
-			this.elem.classList.remove('complete');
-			this.checkbox.checked = false;
-		}
-	}
-
-	createButtons() {
-		this.removeBtn = document.createElement('div');
-		this.removeBtn.classList.add('todolist-item--remove');
-		this.removeBtn.innerHTML = this.options.removeBtnText;
-
-		this.checkbox = document.createElement('input');
-		this.checkbox.type = 'checkbox';
-
-		this.checkboxLabel = document.createElement('label')
-		this.checkboxLabel.classList.add('todolist-item--complete');
-		this.checkboxLabel.appendChild(this.checkbox);
-
-		this.elem.appendChild(this.checkboxLabel);
-
-		if (this.options.removable) {
-			this.elem.appendChild(this.removeBtn);
-		}
-	}
-
-	createTextBox() {
-		this.textBox = document.createElement('div');
-		this.textBox.classList.add('todolist-item--text');
-		if (this.options.singleLine) {
-			this.textBox.classList.add('single-line');
-		}
-
-		this.elem.appendChild(this.textBox);
-
-		this.textBox.setAttribute('contenteditable', this.options.editable);
-	}
-
-	initHandlers() {
-		this.checkboxLabel.addEventListener('click', this.toggleComplete.bind(this));
-		document.addEventListener('click', this.onBlur.bind(this));
-
-		if (this.options.editable) {
-			this.textBox.addEventListener('focus', this.onEdit.bind(this));
-		}
-		if (this.options.removable) {
-			this.removeBtn.addEventListener('click', this.onRemove.bind(this));
-		}
-	}
-
-	toggleComplete() {
-		this.complete = !this.complete;
-	}
-
-	onRemove() {
-		this.elem.remove();
-
-		// dispatch event for handling by TodoList class
-		var removeTodo = new CustomEvent("removeTodo", {
-			bubbles: true,
-			detail: {
-				item: this
-			}
-		});
-		this.parentList.dispatchEvent(removeTodo);
-	}
-
-	onEdit() {
-		this.textBox.classList.remove('single-line');
-		// this.placeCaretAtEnd();
-		this.elem.classList.add('active');
-	}
-
-	onBlur() {
-		if (event.target != this.textBox) {
-			this.elem.classList.remove('active');
-			// this.textBox.innerHTML = this.text;
-
-			if (this.textBox.innerHTML) {
-				this.text = this.textBox.innerHTML;
-			} else {
-				this.textBox.innerHTML = this.text;
-			}
-
-			if (this.options.singleLine) {
-				this.textBox.classList.add('single-line');
-			}
-		}
-	}
-
-	placeCaretAtEnd() {
-		var range,selection;
-		range = document.createRange();//Create a range (a range is a like the selection but invisible)
-		range.selectNodeContents(this.textBox);//Select the entire contents of the element with the range
-		range.collapse(false);//collapse the range to the end point. false means collapse to end rather than the start
-		selection = window.getSelection();//get the selection object (allows you to change selection)
-		selection.removeAllRanges();//remove any selections already made
-		selection.addRange(range);//make the range you have just created the visible selection
-	}
-
-}
-/* harmony export (immutable) */ __webpack_exports__["a"] = TodoListItem;
-
-
-
-/***/ }),
-/* 2 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__todoListItem_js__ = __webpack_require__(1);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__todoListItem_js__ = __webpack_require__(4);
 /*
 *    JavaScript Autocomplete
 *    Author: Vladimir Chernov
@@ -562,32 +399,40 @@ class TodoListItem {
 
 
 const TodoListDefaults = {
-	allowAdding: true,
-	addIconText: '<span class="fa fa-plus-circle"></span>',
-	addBoxPlaceholder: 'New todo:',
-	customAddForm: null, // DOM Element. Will disable creating adding-item if set
+	enableAdding: true,
+	// addIconText: '<span class="fa fa-plus-circle"></span>',
+	// addBoxPlaceholder: 'New todo:',
+	// customAddForm: null, // DOM Element. Will disable creating adding-item if set
+	customAdding: null, // DOM Element form
+	iconText: '<span class="fa fa-plus-circle"></span>',
+	placeholder: 'New todo:',
 	titleText: null,
+	titleElement: 'h5',
 	titleEditable: true,
 	tools: true,
 	removeToolText: '<span class="fa fa-trash"></span>',
 	clearToolText: '<span class="fa fa-times-circle"></span>',
 	readonly: false,
-	desk: null, // DOM Element of main builder element for events assign
+	board: null, // DOM Element of main builder element for events assign
 	listItem: {} // extends todoListItem default options
 };
 /* unused harmony export TodoListDefaults */
 
 
+const TEMPLATE = `
+<div class="todolist">
+	<div class="todolist--list"></div>
+</div>
+`;
+
 class TodoList {
 
-	constructor(element, data, options) {
-
+	constructor(listParentElement, data, options) {
 		this.options = Object.assign({}, TodoListDefaults, options);
 		this.options.listItem = Object.assign({}, options.listItem);
-		console.log(this.options);
-		this.options.listItem.parentList = this.listElement;
+
 		if (this.options.readonly) {
-			this.options.allowAdding = false;
+			this.options.enableAdding = false;
 			this.options.tools = false;
 			this.options.listItem.editable = false;
 			this.options.listItem.removable = false;
@@ -595,16 +440,9 @@ class TodoList {
 
 		this.data = data || [];
 		this.todoList = []; // contains objects of TodoListItem
-		this.addForm = {}; // contains form with input
 
-		this.listElement = this.createListElement(element);
+		this.loadTemplate(listParentElement);
 		this.setList(this.data);
-		if (this.options.titleText) {
-			this.createTitle();
-			this.title = this.options.titleText;
-		}
-		if (this.options.tools) { this.createTools(); }
-
 		this.initHandlers();
 	}
 
@@ -617,69 +455,22 @@ class TodoList {
 		this.titleElement.innerHTML = value;
 	}
 
-	setList(data) {
-		data = data || [];
-		this.todoList = [];
-		this.listElement.innerHTML = '';
-		data.forEach((todo) => {
-			let item = new __WEBPACK_IMPORTED_MODULE_0__todoListItem_js__["a" /* TodoListItem */](todo.text, todo.complete, this.options.listItem);
-			this.add(item);
-		});
-		if (this.options.allowAdding) { this.setAddingForm(); }
-	}
+	loadTemplate(listParentElement) {
+		listParentElement.innerHTML = TEMPLATE;
+		this.listElement = listParentElement.querySelector('.todolist--list');
+		this.options.listItem.parentList = this.listElement;
 
-	add(item) {
-		if (this.options.customAddForm) {
-			this.listElement.appendChild(item.elem);
-		} else {
-			this.listElement.insertBefore(item.elem, this.addElem);
-		}
-
-		this.todoList.push(item);
-	}
-
-	setAddingForm() {
-		if (this.options.customAddForm) {
-			// set from options if is set
-			this.addForm = this.options.customAddForm;
-			this.addInput = this.addForm.querySelector('input');
-			this.addForm.addEventListener('submit', this.onAddTodo.bind(this));
-		} else {
-			this.createAddingItem();
-			this.addBox.addEventListener('focus', this.onAddBoxFocus.bind(this));
-			this.addBox.addEventListener('input', this.onAddTodo.bind(this));
-		}
-	}
-
-	createListElement(parent) {
-		let listElement = document.createElement('ul');
-		listElement.classList.add('todolist--list');
-		parent.appendChild(listElement);
-		return listElement;
+		this.options.titleText && this.createTitle();
+		this.options.tools && this.createTools();
+		this.options.enableAdding && this.setAddingForm();
 	}
 
 	createTitle() {
-		this.titleElement = document.createElement('h5');
-		this.titleElement.classList.add('title');
+		this.titleElement = document.createElement(this.options.titleElement);
+		this.titleElement.classList.add('todolist--title');
+		this.titleElement.setAttribute('contenteditable', this.options.titleEditable);
 		this.listElement.parentElement.insertBefore(this.titleElement, this.listElement);
-		if (this.options.titleEditable) {
-			this.titleElement.setAttribute('contenteditable', 'true');
-		}
-	}
-
-	createAddingItem() {
-		let inner = 	`<div class="todolist-item--add-icon">${this.options.addIconText}</div>
-						<div class="todolist-item--text single-line">
-				            <div class="placeholder">${this.options.addBoxPlaceholder}</div>
-				            <div class="adding-box" contenteditable="true"></div>
-				        </div>`;
-
-		this.addElem = document.createElement('li');
-		this.addElem.classList.add('todolist-item', 'add-item', 'editable');
-		this.listElement.appendChild(this.addElem);
-
-		this.addElem.innerHTML = inner;
-		this.addBox = this.addElem.querySelector('.adding-box');
+		this.title = this.options.titleText;
 	}
 
 	createTools() {
@@ -705,8 +496,58 @@ class TodoList {
 		this.tools.remove.addEventListener('click', this.onRemoveList.bind(this));
 	}
 
+	setAddingForm() {
+		if (this.options.customAdding) {
+			// set from options if is set
+			this.addForm = this.options.customAdding;
+			this.addInput = this.addForm.querySelector('input');
+			this.addForm.addEventListener('submit', this.onAddTodo.bind(this));
+		} else {
+			this.createAddingItem();
+			this.addBox.addEventListener('focus', this.onAddBoxFocus.bind(this));
+			this.addBox.addEventListener('input', this.onAddTodo.bind(this));
+		}
+	}
+
+	createAddingItem() {
+		let inner = `
+		<div class="todolist-item--add-icon">${this.options.iconText}</div>
+		<div class="todolist-item--text single-line">
+            <div class="placeholder">${this.options.placeholder}</div>
+            <div class="adding-box" contenteditable="true"></div>
+        </div>`;
+
+		this.addElem = document.createElement('li');
+		this.addElem.classList.add('todolist-item', 'add-item', 'editable');
+		this.listElement.appendChild(this.addElem);
+
+		this.addElem.innerHTML = inner;
+		this.addBox = this.addElem.querySelector('.adding-box');
+	}
+
+	setList(data) {
+		data = data || [];
+		this.todoList = [];
+		this.listElement.innerHTML = '';
+		this.addElem && this.listElement.appendChild(this.addElem);
+		data.forEach((todo) => {
+			let item = new __WEBPACK_IMPORTED_MODULE_0__todoListItem_js__["a" /* TodoListItem */](todo.text, todo.complete, this.options.listItem);
+			this.add(item);
+		});
+	}
+
+	add(item) {
+		if (this.addElem) {
+			this.listElement.insertBefore(item.elem, this.addElem);
+		} else {
+			this.listElement.appendChild(item.elem);
+		}
+
+		this.todoList.push(item);
+	}
+
 	initHandlers() {
-		this.listElement.addEventListener('removeTodo', this.onRemoveTodo.bind(this));
+		this.listElement.addEventListener('todoListItem.remove', this.onRemoveTodo.bind(this));
 		document.addEventListener('click', this.onBlur.bind(this));
 	}
 
@@ -721,17 +562,15 @@ class TodoList {
 	}
 
 	onBlur(event) {
-		if (!this.options.allowAdding || this.options.customAddForm) {
-			return;
+		if (this.addElem) {
+			if (event.target == this.addBox || event.target.closest('.add-item') == this.addElem) {
+				this.addBox.focus();
+			} else {
+				this.addElem.classList.remove('active');
+			}
 		}
-		if (event.target == this.addBox || event.target.closest('.add-item') == this.addElem) {
-			this.addBox.focus();
-		} else {
-			this.addElem.classList.remove('active');
-		}
-		if (event.target != this.titleElement && this.titleText && this.options.titleEditable) {
+		if (this.title && this.options.titleEditable && event.target != this.titleElement) {
 			this.title = this.titleElement.innerHTML;
-			console.log(this.title);
 		}
 	}
 
@@ -761,20 +600,20 @@ class TodoList {
 		this.titleElement.remove();
 		this.toolsElement.remove();
 
-		if (this.options.desk) {
+		if (this.options.board) {
 			// dispatch event for handling by TodoListBuilder class
-			var removeTodoList = new CustomEvent("removeTodoList", {
+			var removeTodoList = new CustomEvent("todoList.remove", {
 				bubbles: true,
 				detail: {
 					todoList: this
 				}
 			});
-			this.options.desk.dispatchEvent(removeTodoList);
+			this.options.board.dispatchEvent(removeTodoList);
 		}
 	}
 
 	getInputValue() {
-		if (this.options.customAddForm) {
+		if (this.options.customAdding) {
 			return this.addInput.value;
 		} else {
 			return this.addBox.innerHTML;
@@ -782,7 +621,7 @@ class TodoList {
 	}
 
 	clearInput() {
-		if (this.options.customAddForm) {
+		if (this.options.customAdding) {
 			this.addInput.value = '';
 		} else {
 			this.addBox.innerHTML = '';
@@ -795,14 +634,14 @@ class TodoList {
 
 
 /***/ }),
-/* 3 */
+/* 2 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__autocomplete_js__ = __webpack_require__(0);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__chips_js__ = __webpack_require__(4);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__todoList_js__ = __webpack_require__(2);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__chips_js__ = __webpack_require__(3);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__todoList_js__ = __webpack_require__(1);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__todoListBuilder_js__ = __webpack_require__(5);
 /*jslint esversion: 6 */
 /*jslint node: true */
@@ -864,8 +703,7 @@ var todos = document.querySelector('.presentation#todolist');
 
 getToDoData('todo').then((data) => {
     let defaultList = new __WEBPACK_IMPORTED_MODULE_2__todoList_js__["a" /* TodoList */](todos.querySelector('#todolist-default'), data, {
-        customAddForm: document.querySelector('.custom-form'),
-        addInputPlaceholder: 'What we must learn?',
+        customAdding: document.querySelector('.custom-form'),
         onAddTodo: onAddTodo,
         tools: false
     });
@@ -875,57 +713,39 @@ getToDoData('todo').then((data) => {
     let disabledList = new __WEBPACK_IMPORTED_MODULE_2__todoList_js__["a" /* TodoList */](todos.querySelector('#todolist-disabled'), data, {
         readonly: true
     });
-    let fourth = new __WEBPACK_IMPORTED_MODULE_2__todoList_js__["a" /* TodoList */](todos.querySelector('#todolist-fourth'), data, {
-        tools: false,
-        item: {
-            removable: false
-        }
-    });
 });
 
 /* TODOLIST BUILDER */
 
 getToDoData('todo').then((data) => {
-    let deskElement = document.querySelector('#todo-desk');
     let boardElement = document.querySelector('#todo-board');
     let existingTodoLists = [];
 
-    // existingTodoLists.push({
-    //     title: 'Summer education',
-    //     data: data
-    // });
-    // existingTodoLists.push({
-    //     title: 'Other education',
-    //     data: data
-    // });
+    existingTodoLists.push({
+        title: 'Summer education',
+        data: data
+    });
+    existingTodoLists.push({
+        title: 'Other education',
+        data: data
+    });
     existingTodoLists.push({
         data: data
     });
-    console.log('TODOBUILDER');
 
-    let desk = new __WEBPACK_IMPORTED_MODULE_3__todoListBuilder_js__["a" /* TodoListBuilder */](deskElement, {
-        builder: {
-            form: document.querySelector('#frs')
-        },
+    let desk = new __WEBPACK_IMPORTED_MODULE_3__todoListBuilder_js__["a" /* TodoListBuilder */](boardElement, {
         existingTodoLists: existingTodoLists,
-        outerClasses: '.col.xxs-24.md-12.lg-8>.card.todolist',
+        boardClasses: 'row-24',
+        builderFormOuterClasses: 'row-24>.col.xxs-24.md-12.lg-10.offset-md-6.offset-lg-7.custom-form',
+        builderFormClasses: 'custom-form',
+    	builderInputOuterClasses: 'form-control',
+    	builderButtonClasses: 'btn btn-add btn-icon blue',
+        todoListOuterClasses: '.col.xxs-24.md-12.lg-8>.card.todolist',
+    	builderButtonText: '<span class="text">Add TodoList</span><span class="icon"><span class="fa fa-plus"></span></span>',
         todoList: {
             titleText: 'New List',
             listItem: {
-                editable: false
-            }
-        }
-    });
-    let board = new __WEBPACK_IMPORTED_MODULE_3__todoListBuilder_js__["a" /* TodoListBuilder */](boardElement, {
-        builder: {
-            form: document.querySelector('#scd')
-        },
-        existingTodoLists: existingTodoLists,
-        outerClasses: '.col.xxs-24.md-12.lg-8>.card.todolist',
-        todoList: {
-            titleText: 'New List',
-            listItem: {
-                removable: false
+                // editable: false
             }
         }
     });
@@ -973,7 +793,7 @@ function getToDoData(dataString, todolist) {
 
 
 /***/ }),
-/* 4 */
+/* 3 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -1170,11 +990,175 @@ class Chips extends __WEBPACK_IMPORTED_MODULE_0__autocomplete_js__["a" /* Autoco
 
 
 /***/ }),
+/* 4 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/*
+*    JavaScript Autocomplete
+*    Author: Vladimir Chernov
+*    For KeepSolid Summer Internship 2017
+*/
+/*jslint esversion: 6 */
+
+const TodoListItemDefaults = {
+	editable: true,
+	removable: true,
+	singleLine: true,
+	removeBtnText: '<span class="fa fa-times-circle"></span>',
+	parentList: null
+};
+/* unused harmony export TodoListItemDefaults */
+
+
+class TodoListItem {
+
+	constructor(text, complete, options) {
+
+		this.parentList = options.parentList;
+		this.options = Object.assign({}, TodoListItemDefaults, options);
+
+		this.createElem();
+		this.initHandlers();
+
+		this.text = text;
+		this.complete = complete;
+	}
+
+	get text() {
+		return this._text;
+	}
+
+	set text(value) {
+		this._text = value;
+		this.textBox.innerHTML = value;
+	}
+
+	get complete() {
+		return this._complete;
+	}
+
+	set complete(value) {
+		this._complete = value;
+
+		if (value) {
+			this.elem.classList.add('complete');
+			this.checkbox.checked = true;
+		} else {
+			this.elem.classList.remove('complete');
+			this.checkbox.checked = false;
+		}
+	}
+
+	createElem() {
+		this.elem = document.createElement('li');
+		this.elem.classList.add('todolist-item');
+
+		this.createCheckBox();
+		this.createTextBox();
+
+		this.options.editable && this.elem.classList.add('editable');
+		this.textBox.setAttribute('contenteditable', this.options.editable);
+
+		this.options.removable && this.createRemoveBtn();
+	}
+
+	createCheckBox() {
+		this.checkbox = document.createElement('input');
+		this.checkbox.type = 'checkbox';
+		this.checkboxLabel = document.createElement('label')
+		this.checkboxLabel.classList.add('todolist-item--complete');
+		this.checkboxLabel.appendChild(this.checkbox);
+		this.elem.appendChild(this.checkboxLabel);
+	}
+
+	createRemoveBtn() {
+		this.removeBtn = document.createElement('div');
+		this.removeBtn.classList.add('todolist-item--remove');
+		this.removeBtn.innerHTML = this.options.removeBtnText;
+		this.elem.appendChild(this.removeBtn);
+	}
+
+	createTextBox() {
+		this.textBox = document.createElement('div');
+		this.textBox.classList.add('todolist-item--text');
+		this.options.singleLine && this.textBox.classList.add('single-line');
+		this.elem.appendChild(this.textBox);
+	}
+
+	initHandlers() {
+		this.checkboxLabel.addEventListener('click', this.toggleComplete.bind(this));
+		document.addEventListener('click', this.onBlur.bind(this));
+
+		if (this.options.editable) {
+			this.textBox.addEventListener('focus', this.onEdit.bind(this));
+		}
+		if (this.options.removable) {
+			this.removeBtn.addEventListener('click', this.onRemove.bind(this));
+		}
+	}
+
+	toggleComplete() {
+		this.complete = !this.complete;
+	}
+
+	onRemove() {
+		this.elem.remove();
+
+		// dispatch event for handling by TodoList class
+		var removeTodo = new CustomEvent("todoListItem.remove", {
+			bubbles: true,
+			detail: {
+				item: this
+			}
+		});
+		this.parentList.dispatchEvent(removeTodo);
+	}
+
+	onEdit() {
+		this.textBox.classList.remove('single-line');
+		// this.placeCaretAtEnd();
+		this.elem.classList.add('active');
+	}
+
+	onBlur() {
+		if (event.target != this.textBox) {
+			this.elem.classList.remove('active');
+			// this.textBox.innerHTML = this.text;
+
+			if (this.textBox.innerHTML) {
+				this.text = this.textBox.innerHTML;
+			} else {
+				this.textBox.innerHTML = this.text;
+			}
+
+			if (this.options.singleLine) {
+				this.textBox.classList.add('single-line');
+			}
+		}
+	}
+
+	placeCaretAtEnd() {
+		var range,selection;
+		range = document.createRange();//Create a range (a range is a like the selection but invisible)
+		range.selectNodeContents(this.textBox);//Select the entire contents of the element with the range
+		range.collapse(false);//collapse the range to the end point. false means collapse to end rather than the start
+		selection = window.getSelection();//get the selection object (allows you to change selection)
+		selection.removeAllRanges();//remove any selections already made
+		selection.addRange(range);//make the range you have just created the visible selection
+	}
+
+}
+/* harmony export (immutable) */ __webpack_exports__["a"] = TodoListItem;
+
+
+
+/***/ }),
 /* 5 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__todoList_js__ = __webpack_require__(2);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__todoList_js__ = __webpack_require__(1);
 /*
 *    JavaScript TodoListBuilder
 *    Author: Vladimir Chernov
@@ -1185,11 +1169,18 @@ class Chips extends __WEBPACK_IMPORTED_MODULE_0__autocomplete_js__["a" /* Autoco
 
 
 const TodoListBuilderDefaults = {
-	builder: {
-		form: null, // DOM Element form, must be submitted to add new list
-		input: null // DOM Element input, unnecessary option
-	},
-	outerClasses: null, // string of classes, e.g. '.my.outer>.nested'
+	// builder: {
+	// 	form: null, // DOM Element form, must be submitted to add new list
+	// 	input: null // DOM Element input, unnecessary option
+	// },
+	enableAdding: true,
+	boardClasses: null,
+	todoListOuterClasses: null,
+	builderFormOuterClasses: null,
+	builderInputOuterClasses: null,
+	builderButtonText: 'Add TodoList',
+	builderPlaceholder: 'New TodoList',
+	builderButtonClasses: '', // string of classes, e.g. '.my.outer>.nested'
 	todoList: {} // extends todoList default options
 };
 /* unused harmony export TodoListBuilderDefaults */
@@ -1197,56 +1188,91 @@ const TodoListBuilderDefaults = {
 
 class TodoListBuilder {
 
-	constructor(desk, options) {
+	constructor(builderParentElement, options) {
 
 		this.options = Object.assign({}, TodoListBuilderDefaults, options);
 		this.options.todolist = Object.assign({}, options.todoList);
 
-		this.desk = desk;
 		this.lists = [];
 
-		if (this.options.builder.form) {
-			this.builder = {};
-			this.builder.form = this.options.builder.form;
-			this.builder.input = this.options.builder.input || this.builder.form.querySelector('input');
-		}
-
+		this.loadTemplate(builderParentElement);
 		this.init();
 		this.initEvents();
 
 	}
 
+	loadTemplate(builderParentElement) {
+		let template = `
+		<div class="todolist-builder">
+			<div class="todolist-board ${this.options.boardClasses}"></div>
+		</div>
+		`;
+		builderParentElement.innerHTML = template;
+		this.board = builderParentElement.querySelector('.todolist-board');
+
+		this.todoListOuterTemplate = this.createOuter(this.options.todoListOuterClasses);
+
+		this.options.enableAdding && this.createBuilderForm();
+	}
+
+	createBuilderForm() {
+		this.builder = {};
+		this.builder.form = document.createElement('form');
+		this.builder.form.className = this.options.builderFormClasses;
+		this.builder.input = document.createElement('input');
+		this.builder.input.type = 'text';
+		this.builder.input.placeholder = this.options.builderPlaceholder;
+		this.builder.button = document.createElement('button');
+		this.builder.button.type = 'submit';
+		this.builder.button.className = this.options.builderButtonClasses;
+		this.builder.button.innerHTML = this.options.builderButtonText;
+
+		let builderOuter = this.createOuter(this.options.builderFormOuterClasses);
+		let builderOuterDeepest = builderOuter.querySelector('.outer-deepest') || builderOuter;
+
+		let inputOuter = this.createOuter(this.options.builderInputOuterClasses);
+		let inputOuterDeepest = inputOuter.querySelector('.outer-deepest') || inputOuter;
+
+		builderOuterDeepest.appendChild(this.builder.form);
+		builderOuterDeepest.classList.remove('outer-deepest');
+		inputOuterDeepest.appendChild(this.builder.input);
+		inputOuterDeepest.classList.remove('outer-deepest');
+
+		this.builder.form.appendChild(inputOuter);
+		this.builder.form.appendChild(this.builder.button);
+		this.board.parentElement.insertBefore(builderOuter, this.board);
+	}
+
 	init() {
 		if (this.options.existingTodoLists) {
 			this.options.existingTodoLists.forEach(todoList => {
-				this.addList(todoList);
+				this.buildList(todoList);
 			});
 		}
 	}
 
-	addList(todoList) {
+	buildList(todoList) {
 		todoList = todoList || {};
-		let outer = this.createOuter();
-		let outerDeepest = outer.querySelector('.outer-deepest');
+		let outer = this.todoListOuterTemplate.cloneNode(true);
+		let outerDeepest = outer.querySelector('.outer-deepest') || outer;
 
 		outerDeepest.classList.remove('outer-deepest');
-		this.desk.appendChild(outer);
+		this.board.appendChild(outer);
 
 		let newList = {};
 		let newListOptions = {
 			titleText: todoList.title || this.options.todoList.titleText,
-			desk: this.desk
+			board: this.board
 		};
 		newListOptions = Object.assign({}, this.options.todoList, newListOptions);
-		// console.log(newListOptions);
 
 		newList.item = new __WEBPACK_IMPORTED_MODULE_0__todoList_js__["a" /* TodoList */](outerDeepest, todoList.data, newListOptions);
 		newList.outer = outer;
 		this.lists.push(newList);
 	}
 
-	createOuter() {
-		let outerElementsArray = this.options.outerClasses.split('>'),
+	createOuter(outerClassesString) {
+		let outerElementsArray = outerClassesString.split('>'),
 			last = outerElementsArray.length - 1,
 			i = 0,
 			str = '';
@@ -1277,17 +1303,18 @@ class TodoListBuilder {
 	}
 
 	initEvents() {
-		if (this.builder) {
+		if (this.builder.form) {
 			this.builder.form.addEventListener('submit', this.onCreateNew.bind(this));
 		}
-		this.desk.addEventListener('removeTodoList', this.onRemoveTodoList.bind(this));
+		this.board.addEventListener('todoList.remove', this.onRemoveTodoList.bind(this));
 	}
 
 	onCreateNew(event) {
 		event.preventDefault();
-		this.addList({
+		this.buildList({
 			title: this.builder.input && this.builder.input.value
 		});
+		this.builder.input.value = '';
 	}
 
 	onRemoveTodoList(event) {

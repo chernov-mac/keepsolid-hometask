@@ -58,8 +58,7 @@ var todos = document.querySelector('.presentation#todolist');
 
 getToDoData('todo').then((data) => {
     let defaultList = new TodoList(todos.querySelector('#todolist-default'), data, {
-        customAddForm: document.querySelector('.custom-form'),
-        addInputPlaceholder: 'What we must learn?',
+        customAdding: document.querySelector('.custom-form'),
         onAddTodo: onAddTodo,
         tools: false
     });
@@ -69,57 +68,39 @@ getToDoData('todo').then((data) => {
     let disabledList = new TodoList(todos.querySelector('#todolist-disabled'), data, {
         readonly: true
     });
-    let fourth = new TodoList(todos.querySelector('#todolist-fourth'), data, {
-        tools: false,
-        item: {
-            removable: false
-        }
-    });
 });
 
 /* TODOLIST BUILDER */
 
 getToDoData('todo').then((data) => {
-    let deskElement = document.querySelector('#todo-desk');
     let boardElement = document.querySelector('#todo-board');
     let existingTodoLists = [];
 
-    // existingTodoLists.push({
-    //     title: 'Summer education',
-    //     data: data
-    // });
-    // existingTodoLists.push({
-    //     title: 'Other education',
-    //     data: data
-    // });
+    existingTodoLists.push({
+        title: 'Summer education',
+        data: data
+    });
+    existingTodoLists.push({
+        title: 'Other education',
+        data: data
+    });
     existingTodoLists.push({
         data: data
     });
-    console.log('TODOBUILDER');
 
-    let desk = new TodoListBuilder(deskElement, {
-        builder: {
-            form: document.querySelector('#frs')
-        },
+    let desk = new TodoListBuilder(boardElement, {
         existingTodoLists: existingTodoLists,
-        outerClasses: '.col.xxs-24.md-12.lg-8>.card.todolist',
+        boardClasses: 'row-24',
+        builderFormOuterClasses: 'row-24>.col.xxs-24.md-12.lg-10.offset-md-6.offset-lg-7.custom-form',
+        builderFormClasses: 'custom-form',
+    	builderInputOuterClasses: 'form-control',
+    	builderButtonClasses: 'btn btn-add btn-icon blue',
+        todoListOuterClasses: '.col.xxs-24.md-12.lg-8>.card.todolist',
+    	builderButtonText: '<span class="text">Add TodoList</span><span class="icon"><span class="fa fa-plus"></span></span>',
         todoList: {
             titleText: 'New List',
             listItem: {
-                editable: false
-            }
-        }
-    });
-    let board = new TodoListBuilder(boardElement, {
-        builder: {
-            form: document.querySelector('#scd')
-        },
-        existingTodoLists: existingTodoLists,
-        outerClasses: '.col.xxs-24.md-12.lg-8>.card.todolist',
-        todoList: {
-            titleText: 'New List',
-            listItem: {
-                removable: false
+                // editable: false
             }
         }
     });

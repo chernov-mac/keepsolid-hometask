@@ -9,7 +9,8 @@ export const TodoListItemDefaults = {
 	editable: true,
 	removable: true,
 	singleLine: true,
-	removeBtnText: '<span class="fa fa-times-circle"></span>'
+	removeBtnText: '<span class="fa fa-times-circle"></span>',
+	parentList: null
 };
 
 export class TodoListItem {
@@ -19,12 +20,7 @@ export class TodoListItem {
 		this.parentList = options.parentList;
 		this.options = Object.assign({}, TodoListItemDefaults, options);
 
-		this.elem = document.createElement('li');
-		this.elem.classList.add('todolist-item');
-		if (this.options.editable) { this.elem.classList.add('editable'); }
-
-		this.createButtons();
-		this.createTextBox();
+		this.createElem();
 		this.initHandlers();
 
 		this.text = text;
@@ -56,35 +52,40 @@ export class TodoListItem {
 		}
 	}
 
-	createButtons() {
-		this.removeBtn = document.createElement('div');
-		this.removeBtn.classList.add('todolist-item--remove');
-		this.removeBtn.innerHTML = this.options.removeBtnText;
+	createElem() {
+		this.elem = document.createElement('li');
+		this.elem.classList.add('todolist-item');
 
+		this.createCheckBox();
+		this.createTextBox();
+
+		this.options.editable && this.elem.classList.add('editable');
+		this.textBox.setAttribute('contenteditable', this.options.editable);
+
+		this.options.removable && this.createRemoveBtn();
+	}
+
+	createCheckBox() {
 		this.checkbox = document.createElement('input');
 		this.checkbox.type = 'checkbox';
-
 		this.checkboxLabel = document.createElement('label')
 		this.checkboxLabel.classList.add('todolist-item--complete');
 		this.checkboxLabel.appendChild(this.checkbox);
-
 		this.elem.appendChild(this.checkboxLabel);
+	}
 
-		if (this.options.removable) {
-			this.elem.appendChild(this.removeBtn);
-		}
+	createRemoveBtn() {
+		this.removeBtn = document.createElement('div');
+		this.removeBtn.classList.add('todolist-item--remove');
+		this.removeBtn.innerHTML = this.options.removeBtnText;
+		this.elem.appendChild(this.removeBtn);
 	}
 
 	createTextBox() {
 		this.textBox = document.createElement('div');
 		this.textBox.classList.add('todolist-item--text');
-		if (this.options.singleLine) {
-			this.textBox.classList.add('single-line');
-		}
-
+		this.options.singleLine && this.textBox.classList.add('single-line');
 		this.elem.appendChild(this.textBox);
-
-		this.textBox.setAttribute('contenteditable', this.options.editable);
 	}
 
 	initHandlers() {
@@ -107,7 +108,7 @@ export class TodoListItem {
 		this.elem.remove();
 
 		// dispatch event for handling by TodoList class
-		var removeTodo = new CustomEvent("removeTodo", {
+		var removeTodo = new CustomEvent("todoListItem.remove", {
 			bubbles: true,
 			detail: {
 				item: this
