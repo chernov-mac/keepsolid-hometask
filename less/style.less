@@ -10,6 +10,7 @@
 @blue: #2196f3;
 @red: #f44336;
 @green: #4caf50;
+@bluegray: #455a64;
 
 /* Animations */
 @keyframes fa-spin {
@@ -403,8 +404,9 @@ p {
     }
     &--tools {
         opacity: 0;
-        padding: 4px;
+        padding: 8px;
         color: #999;
+        align-items: center;
         .transition;
 
         .tool {
@@ -414,8 +416,22 @@ p {
             cursor: pointer;
             .transition(all .1s ease);
 
-            &:hover {
+            &.clear:hover {
                 color: @red;
+            }
+            &.remove:hover {
+                color: @bluegray;
+            }
+        }
+        .mover {
+            padding: 0;
+
+            .tool {
+                // font-size: 12px;
+
+                &:hover {
+                    color: @blue;
+                }
             }
         }
     }
@@ -426,16 +442,16 @@ p {
             &--complete,
             &--add-icon {
                 margin: 0;
-                width: 28px;
+                // width: 28px;
 
                 input,
                 .fa {
-                    margin: 4px 8px;
+                    margin: 8px 12px;
                 }
             }
             &--text,
             &--text .adding-box {
-                padding: 10px;
+                padding: 10px 0;
                 font-family: 'Helvetica';
                 font-weight: 300;
                 font-size: 14px;
@@ -445,7 +461,7 @@ p {
             }
             &--remove {
                 margin: 0;
-                padding: 4px 8px;
+                padding: 8px 12px;
                 color: #999;
 
                 .remove {

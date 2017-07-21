@@ -9,8 +9,7 @@ export const TodoListItemDefaults = {
 	editable: true,
 	removable: true,
 	singleLine: true,
-	removeBtnText: '<span class="fa fa-times-circle"></span>',
-	parentList: null
+	removeBtnText: '<span class="fa fa-times-circle"></span>'
 };
 
 export class TodoListItem {
@@ -34,6 +33,12 @@ export class TodoListItem {
 	set text(value) {
 		this._text = value;
 		this.textBox.innerHTML = value;
+
+		var itemEdit = new CustomEvent("todoListItem.edit", {
+			bubbles: true,
+			detail: { item: this }
+		});
+		this.elem.dispatchEvent(itemEdit);
 	}
 
 	get complete() {
@@ -50,6 +55,12 @@ export class TodoListItem {
 			this.elem.classList.remove('complete');
 			this.checkbox.checked = false;
 		}
+
+		var itemSetStatus = new CustomEvent("todoListItem.setStatus", {
+			bubbles: true,
+			detail: { item: this }
+		});
+		this.elem.dispatchEvent(itemSetStatus);
 	}
 
 	createElem() {
@@ -84,7 +95,7 @@ export class TodoListItem {
 	createTextBox() {
 		this.textBox = document.createElement('div');
 		this.textBox.classList.add('todolist-item--text');
-		this.options.singleLine && this.textBox.classList.add('single-line');
+		this.options.singleLine && this.elem.classList.add('single-line');
 		this.elem.appendChild(this.textBox);
 	}
 
@@ -105,16 +116,13 @@ export class TodoListItem {
 	}
 
 	onRemove() {
-		this.elem.remove();
-
-		// dispatch event for handling by TodoList class
-		var removeTodo = new CustomEvent("todoListItem.remove", {
+		var itemRemove = new CustomEvent("todoListItem.remove", {
 			bubbles: true,
-			detail: {
-				item: this
-			}
+			detail: { item: this }
 		});
-		this.parentList.dispatchEvent(removeTodo);
+		this.elem.dispatchEvent(itemRemove);
+
+		this.elem.remove();
 	}
 
 	onEdit() {
@@ -126,18 +134,21 @@ export class TodoListItem {
 	onBlur() {
 		if (event.target != this.textBox) {
 			this.elem.classList.remove('active');
-			// this.textBox.innerHTML = this.text;
 
-			if (this.textBox.innerHTML) {
-				this.text = this.textBox.innerHTML;
-			} else {
-				this.textBox.innerHTML = this.text;
-			}
-
-			if (this.options.singleLine) {
-				this.textBox.classList.add('single-line');
-			}
+			this.updateTextValue();
 		}
+	}
+
+	updateTextValue() {
+		if (this.textBox.innerHTML && !this.isActualText()) {
+			this.text = this.textBox.innerHTML;
+		} else {
+			this.textBox.innerHTML = this.text;
+		}
+	}
+
+	isActualText() {
+		return this.text == this.textBox.innerHTML ? true : false;
 	}
 
 	placeCaretAtEnd() {

@@ -8,21 +8,24 @@
 import { TodoListItem, TodoListItemDefaults } from "./todoListItem.js";
 
 export const TodoListDefaults = {
+	// adding
 	enableAdding: true,
-	// addIconText: '<span class="fa fa-plus-circle"></span>',
-	// addBoxPlaceholder: 'New todo:',
-	// customAddForm: null, // DOM Element. Will disable creating adding-item if set
 	customAdding: null, // DOM Element form
 	iconText: '<span class="fa fa-plus-circle"></span>',
 	placeholder: 'New todo:',
+	// title
 	titleText: null,
 	titleElement: 'h5',
 	titleEditable: true,
+	// tools
 	tools: true,
+	moving: false,
+	moveLeftToolText: '<span class="fa fa-chevron-circle-left"></span>',
+	moveRightToolText: '<span class="fa fa-chevron-circle-right"></span>',
 	removeToolText: '<span class="fa fa-trash"></span>',
 	clearToolText: '<span class="fa fa-times-circle"></span>',
+	// other
 	readonly: false,
-	board: null, // DOM Element of main builder element for events assign
 	listItem: {} // extends todoListItem default options
 };
 
@@ -37,6 +40,7 @@ export class TodoList {
 	constructor(listParentElement, data, options) {
 		this.options = Object.assign({}, TodoListDefaults, options);
 		this.options.listItem = Object.assign({}, options.listItem);
+		console.log(this.options);
 
 		if (this.options.readonly) {
 			this.options.enableAdding = false;
@@ -46,7 +50,7 @@ export class TodoList {
 		}
 
 		this.data = data || [];
-		this.todoList = []; // contains objects of TodoListItem
+		this.itemsArray = []; // contains objects of TodoListItem
 
 		this.loadTemplate(listParentElement);
 		this.setList(this.data);
@@ -60,12 +64,17 @@ export class TodoList {
 	set title(value) {
 		this._title = value;
 		this.titleElement.innerHTML = value;
+
+		let setTitle = new CustomEvent("todoList.setTitle", {
+			bubbles: true,
+			detail: { todoList: this }
+		});
+		this.listElement.dispatchEvent(setTitle);
 	}
 
 	loadTemplate(listParentElement) {
 		listParentElement.innerHTML = TEMPLATE;
 		this.listElement = listParentElement.querySelector('.todolist--list');
-		this.options.listItem.parentList = this.listElement;
 
 		this.options.titleText && this.createTitle();
 		this.options.tools && this.createTools();
@@ -81,27 +90,44 @@ export class TodoList {
 	}
 
 	createTools() {
-		this.tools = {};
+		this.tools = document.createElement('div');
+		this.tools.classList.add('todolist--tools');
 
-		this.toolsElement = document.createElement('div');
-		this.toolsElement.classList.add('todolist--tools');
+		let inner = `
+			<div class="tool clear">${this.options.clearToolText}</div>
+			<div class="tool remove">${this.options.removeToolText}</div>
+		`;
+		this.tools.innerHTML = inner;
+		this.listElement.parentElement.insertBefore(this.tools, this.listElement);
 
-		this.tools.remove = document.createElement('div');
-		this.tools.remove.classList.add('tool', 'remove');
-		this.tools.remove.innerHTML = this.options.removeToolText;
+		this.clearTool = this.tools.querySelector('.tool.clear');
+		this.removeTool = this.tools.querySelector('.tool.remove');
 
-		this.tools.clear = document.createElement('div');
-		this.tools.clear.classList.add('tool', 'clear');
-		this.tools.clear.innerHTML = this.options.clearToolText;
+		this.clearTool.addEventListener('click', this.clearList.bind(this));
+		this.removeTool.addEventListener('click', this.removeList.bind(this));
 
-		this.toolsElement.appendChild(this.tools.clear);
-		this.toolsElement.appendChild(this.tools.remove);
-
-		this.listElement.parentElement.insertBefore(this.toolsElement, this.listElement);
-
-		this.tools.clear.addEventListener('click', this.onClearList.bind(this));
-		this.tools.remove.addEventListener('click', this.onRemoveList.bind(this));
+		this.options.moving && this.createMoving();
 	}
+
+	createMoving() {
+		this.moveTool = {};
+
+		this.mover = document.createElement('div');
+		this.mover.classList.add('tool', 'mover');
+
+		let inner = `
+			<div class="tool move left">${this.options.moveLeftToolText}</div>
+			<div class="tool move right">${this.options.moveRightToolText}</div>
+		`;
+		this.mover.innerHTML = inner;
+		this.tools.insertBefore(this.mover, this.tools.querySelector('.tool.clear'));
+
+		this.moveTool.left = this.mover.querySelector('.tool.left');
+		this.moveTool.right = this.mover.querySelector('.tool.right');
+
+		this.moveTool.left.addEventListener('click', this.onMoveList.bind(this, 'left'));
+		this.moveTool.right.addEventListener('click', this.onMoveList.bind(this, 'right'));
+	};
 
 	setAddingForm() {
 		if (this.options.customAdding) {
@@ -134,7 +160,7 @@ export class TodoList {
 
 	setList(data) {
 		data = data || [];
-		this.todoList = [];
+		this.itemsArray = [];
 		this.listElement.innerHTML = '';
 		this.addElem && this.listElement.appendChild(this.addElem);
 		data.forEach((todo) => {
@@ -150,7 +176,13 @@ export class TodoList {
 			this.listElement.appendChild(item.elem);
 		}
 
-		this.todoList.push(item);
+		this.itemsArray.push(item);
+
+		let addItem = new CustomEvent("todoList.addItem", {
+			bubbles: true,
+			detail: { todoList: this }
+		});
+		this.listElement.dispatchEvent(addItem);
 	}
 
 	initHandlers() {
@@ -160,8 +192,8 @@ export class TodoList {
 
 	onRemoveTodo(event) {
 		let item = event.detail.item;
-		let index = this.todoList.indexOf(item);
-		this.todoList.splice(index, 1);
+		let index = this.itemsArray.indexOf(item);
+		this.itemsArray.splice(index, 1);
 	}
 
 	onAddBoxFocus(event) {
@@ -176,7 +208,7 @@ export class TodoList {
 				this.addElem.classList.remove('active');
 			}
 		}
-		if (this.title && this.options.titleEditable && event.target != this.titleElement) {
+		if (this.title && this.options.titleEditable && event.target != this.titleElement && this.title != this.titleElement.innerHTML) {
 			this.title = this.titleElement.innerHTML;
 		}
 	}
@@ -198,25 +230,37 @@ export class TodoList {
 		this.options.onAddTodo && this.options.onAddTodo.call(this, item);
 	}
 
-	onClearList() {
+	clearList() {
 		this.setList();
+
+		let clear = new CustomEvent("todoList.clear", {
+			bubbles: true,
+			detail: { todoList: this }
+		});
+		this.listElement.dispatchEvent(clear);
 	}
 
-	onRemoveList() {
+	removeList() {
+		let todoListRemove = new CustomEvent("todoList.remove", {
+			bubbles: true,
+			detail: { todoList: this }
+		});
+		this.listElement.dispatchEvent(todoListRemove);
+
 		this.listElement.remove();
 		this.titleElement.remove();
-		this.toolsElement.remove();
+		this.tools.remove();
+	}
 
-		if (this.options.board) {
-			// dispatch event for handling by TodoListBuilder class
-			var removeTodoList = new CustomEvent("todoList.remove", {
-				bubbles: true,
-				detail: {
-					todoList: this
-				}
-			});
-			this.options.board.dispatchEvent(removeTodoList);
-		}
+	onMoveList(direction) {
+		let moveTodoList = new CustomEvent("todoList.move", {
+			bubbles: true,
+			detail: {
+				direction: direction,
+				todoList: this
+			}
+		});
+		this.listElement.dispatchEvent(moveTodoList);
 	}
 
 	getInputValue() {
