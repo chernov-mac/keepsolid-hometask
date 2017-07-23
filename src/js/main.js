@@ -75,12 +75,13 @@ getToDoData('todo').then((data) => {
 let boardElement = document.querySelector('#todo-board');
 let desk = new TodoListBuilder(boardElement, {
     boardClasses: 'row-24',
-    builderFormOuterClasses: 'row-24>.col.xxs-24.md-12.lg-10.offset-md-6.offset-lg-7.custom-form',
+    builderFormOuterClasses: 'row-24>.col.xxs-24.md-12.lg-8.offset-md-6.offset-lg-8',
     builderFormClasses: 'custom-form',
     builderInputOuterClasses: 'form-control',
     builderButtonClasses: 'btn btn-add btn-icon blue',
-    todoListOuterClasses: '.col.xxs-24.md-12.lg-8>.card.todolist',
-    builderButtonText: '<span class="text">Add TodoList</span><span class="icon"><span class="fa fa-plus"></span></span>',
+    todoListOuterClasses: '.col.xxs-24.md-12.lg-8',
+    builderButtonText: '<span class="text">Add</span><span class="icon"><span class="fa fa-plus"></span></span>',
+    moveAnimation: false,
     todoList: {
         titleText: 'New List'
     },

@@ -40,9 +40,29 @@
         transform: translate3d(4px, 0, 0);
     }
 }
+@keyframes zoom-in {
+    0%, 100% {
+        transform: translateZ(0);
+    }
+    30%, 70% {
+        transform: translateZ(100px);
+    }
+}
+@keyframes zoom-out {
+    0%, 100% {
+        transform: translateZ(0);
+    }
+    30%, 70% {
+        transform: translateZ(-100px);
+    }
+}
 .pulse {
     -webkit-animation: fa-spin 1s infinite steps(8);
             animation: fa-spin 1s infinite steps(8);
+}
+.animate(@name, @time: 1s, @count: 1) {
+    -webkit-animation: @name @time @count;
+            animation: @name @time @count;
 }
 
 /* Typography */
@@ -385,6 +405,23 @@ p {
     }
 }
 
+.custom-form {
+    display: flex;
+    width: 100%;
+    margin-bottom: 20px;
+
+    .btn {
+        margin: 0 auto;
+    }
+    .form-control {
+        flex: 1 auto;
+    }
+    .form-control + .btn {
+        flex: 0 auto;
+        margin-left: 15px;
+    }
+}
+
 .card {
     display: inline-block;
     width: 100%;
@@ -393,6 +430,8 @@ p {
     .box-shadow;
 }
 .todolist {
+    overflow: hidden;
+    .card;
 
     &--title {
         margin: 15px 20px 10px;
@@ -407,7 +446,7 @@ p {
         padding: 8px;
         color: #999;
         align-items: center;
-        .transition;
+        .transition('opacity');
 
         .tool {
             display: block;
@@ -437,12 +476,11 @@ p {
     }
     &--list {
         .todolist-item {
-            border-bottom: 1px solid #eee;
+            border-top: 1px solid #eee;
 
             &--complete,
             &--add-icon {
                 margin: 0;
-                // width: 28px;
 
                 input,
                 .fa {
@@ -481,7 +519,16 @@ p {
 
             &.editable {
                 &.active {
-                    border-bottom-color: @blue;
+                    margin-left: -15px;
+                    margin-right: -15px;
+                    padding-left: 15px;
+                    padding-right: 15px;
+                    box-shadow: inset 0 1px 2px 1px rgba(0, 0, 0, 0.18);
+
+                    border-top-color: transparent;
+                }
+                &.active + .todolist-item {
+                    border-top-color: transparent;
                 }
             }
 
@@ -505,29 +552,29 @@ p {
                         }
                     }
                 }
-                &.active,
-                &:hover {
-                    .todolist-item {
-                        &--add-icon {
-                            color: @blue;
+            }
+
+            &:first-child {
+                border-top: none;
+            }
+
+
+            &.active,
+            &:hover {
+                background: #fafafa;
+
+                .todolist-item {
+                    &--add-icon {
+                        color: @blue;
+                    }
+                    &--remove {
+                        color: @red;
+
+                        .remove {
+                            background: @red;
+                            .letterpress();
                         }
                     }
-                }
-            }
-
-            &:last-child {
-                border-bottom-color: transparent;
-            }
-
-            &:hover {
-                background: #f7f7f7;
-
-                .todolist-item--remove {
-                    color: @red;
-                }
-                .remove {
-                    background: @red;
-                    .letterpress();
                 }
             }
         }
@@ -540,20 +587,43 @@ p {
     }
 }
 
-.custom-form {
-    display: flex;
-    width: 100%;
-    margin-bottom: 20px;
+// must be in builder's style file
+.scene {
+    position: relative;
 
-    .btn {
-        margin: 0 auto;
+    & > div {
+        position: relative;
+        z-index: 2;
     }
-    .form-control {
-        flex: 1 auto;
-    }
-    .form-control + .btn {
-        flex: 0 auto;
-        margin-left: 15px;
+    .clone {
+        position: absolute;
+        z-index: 999;
+        perspective: 1200px;
+        perspective-origin: center center;
+        .transition(0.8s, all, ease, .1s);
+
+        &.animate {
+            &.over .todolist {
+                .animate(zoom-in, 1s);
+            }
+            &.under .todolist {
+                .animate(zoom-out, 1s);
+            }
+        }
+        &.over {
+            z-index: 3;
+
+            .todolist {
+                box-shadow: 0 0 14px rgba(0, 0, 0, 0.12), 0 4px 10px rgba(0, 0, 0, 0.24);
+
+                .todolist--tools {
+                    opacity: 1;
+                }
+            }
+        }
+        &.under {
+            z-index: 1;
+        }
     }
 }
 

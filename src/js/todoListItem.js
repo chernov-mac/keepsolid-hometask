@@ -79,6 +79,7 @@ export class TodoListItem {
 	createCheckBox() {
 		this.checkbox = document.createElement('input');
 		this.checkbox.type = 'checkbox';
+		this.checkbox.setAttribute('tabindex', '-1');
 		this.checkboxLabel = document.createElement('label')
 		this.checkboxLabel.classList.add('todolist-item--complete');
 		this.checkboxLabel.appendChild(this.checkbox);
@@ -100,11 +101,13 @@ export class TodoListItem {
 	}
 
 	initHandlers() {
-		this.checkboxLabel.addEventListener('click', this.toggleComplete.bind(this));
-		document.addEventListener('click', this.onBlur.bind(this));
+		this.checkbox.addEventListener('click', this.toggleComplete.bind(this));
+		// document.addEventListener('click', this.onBlur.bind(this));
 
 		if (this.options.editable) {
 			this.textBox.addEventListener('focus', this.onEdit.bind(this));
+			this.textBox.addEventListener('blur', this.onBlur.bind(this));
+			// this.textBox.querySelector('span').addEventListener('focus', this.onEdit.bind(this));
 		}
 		if (this.options.removable) {
 			this.removeBtn.addEventListener('click', this.onRemove.bind(this));
@@ -126,15 +129,13 @@ export class TodoListItem {
 	}
 
 	onEdit() {
-		this.textBox.classList.remove('single-line');
-		// this.placeCaretAtEnd();
+		this.placeCaretAtEnd();
 		this.elem.classList.add('active');
 	}
 
 	onBlur() {
-		if (event.target != this.textBox) {
+		if (document.activeElement != this.textBox) {
 			this.elem.classList.remove('active');
-
 			this.updateTextValue();
 		}
 	}

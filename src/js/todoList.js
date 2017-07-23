@@ -40,7 +40,6 @@ export class TodoList {
 	constructor(listParentElement, data, options) {
 		this.options = Object.assign({}, TodoListDefaults, options);
 		this.options.listItem = Object.assign({}, options.listItem);
-		console.log(this.options);
 
 		if (this.options.readonly) {
 			this.options.enableAdding = false;

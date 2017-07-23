@@ -433,7 +433,6 @@ class TodoList {
 	constructor(listParentElement, data, options) {
 		this.options = Object.assign({}, TodoListDefaults, options);
 		this.options.listItem = Object.assign({}, options.listItem);
-		console.log(this.options);
 
 		if (this.options.readonly) {
 			this.options.enableAdding = false;
@@ -764,12 +763,13 @@ getToDoData('todo').then((data) => {
 let boardElement = document.querySelector('#todo-board');
 let desk = new __WEBPACK_IMPORTED_MODULE_3__todoListBuilder_js__["a" /* TodoListBuilder */](boardElement, {
     boardClasses: 'row-24',
-    builderFormOuterClasses: 'row-24>.col.xxs-24.md-12.lg-10.offset-md-6.offset-lg-7.custom-form',
+    builderFormOuterClasses: 'row-24>.col.xxs-24.md-12.lg-8.offset-md-6.offset-lg-8',
     builderFormClasses: 'custom-form',
     builderInputOuterClasses: 'form-control',
     builderButtonClasses: 'btn btn-add btn-icon blue',
-    todoListOuterClasses: '.col.xxs-24.md-12.lg-8>.card.todolist',
-    builderButtonText: '<span class="text">Add TodoList</span><span class="icon"><span class="fa fa-plus"></span></span>',
+    todoListOuterClasses: '.col.xxs-24.md-12.lg-8',
+    builderButtonText: '<span class="text">Add</span><span class="icon"><span class="fa fa-plus"></span></span>',
+    moveAnimation: false,
     todoList: {
         titleText: 'New List'
     },
@@ -1102,6 +1102,7 @@ class TodoListItem {
 	createCheckBox() {
 		this.checkbox = document.createElement('input');
 		this.checkbox.type = 'checkbox';
+		this.checkbox.setAttribute('tabindex', '-1');
 		this.checkboxLabel = document.createElement('label')
 		this.checkboxLabel.classList.add('todolist-item--complete');
 		this.checkboxLabel.appendChild(this.checkbox);
@@ -1123,11 +1124,13 @@ class TodoListItem {
 	}
 
 	initHandlers() {
-		this.checkboxLabel.addEventListener('click', this.toggleComplete.bind(this));
-		document.addEventListener('click', this.onBlur.bind(this));
+		this.checkbox.addEventListener('click', this.toggleComplete.bind(this));
+		// document.addEventListener('click', this.onBlur.bind(this));
 
 		if (this.options.editable) {
 			this.textBox.addEventListener('focus', this.onEdit.bind(this));
+			this.textBox.addEventListener('blur', this.onBlur.bind(this));
+			// this.textBox.querySelector('span').addEventListener('focus', this.onEdit.bind(this));
 		}
 		if (this.options.removable) {
 			this.removeBtn.addEventListener('click', this.onRemove.bind(this));
@@ -1149,15 +1152,13 @@ class TodoListItem {
 	}
 
 	onEdit() {
-		this.textBox.classList.remove('single-line');
-		// this.placeCaretAtEnd();
+		this.placeCaretAtEnd();
 		this.elem.classList.add('active');
 	}
 
 	onBlur() {
-		if (event.target != this.textBox) {
+		if (document.activeElement != this.textBox) {
 			this.elem.classList.remove('active');
-
 			this.updateTextValue();
 		}
 	}
@@ -1214,11 +1215,12 @@ const TodoListBuilderDefaults = {
 	builderButtonText: 'Add TodoList',
 	builderPlaceholder: 'New TodoList',
 	builderButtonClasses: 'btn btn-builder', // string of classes, e.g. '.my.outer>.nested'
+	moveAnimation: true,
+	sources: [], // array of URL strings
 	todoList: { // extends todoList default options
 		tools: true,
 		moving: true
-	},
-	sources: [] // array of URL strings
+	}
 };
 /* unused harmony export TodoListBuilderDefaults */
 
@@ -1272,7 +1274,6 @@ class TodoListBuilder {
 		this.builder.button.innerHTML = this.options.builderButtonText;
 
 		let builderOuter = this.createOuter(this.options.builderFormOuterClasses) || this.builder.form;
-		console.log(builderOuter);
 		let builderOuterDeepest = builderOuter.querySelector('.outer-deepest') || builderOuter;
 
 		let inputOuter = this.createOuter(this.options.builderInputOuterClasses) || this.builder.input;
@@ -1347,6 +1348,7 @@ class TodoListBuilder {
 					sourceData.forEach(todoList => {
 						this.buildList(todoList);
 					});
+					this.updateStorage();
 				});
 			});
 		}
@@ -1355,6 +1357,8 @@ class TodoListBuilder {
 		if (this.data.length === 0 && this.options.sources.length === 0) {
 			this.buildList();
 		}
+
+		this.updateStorage();
 	}
 
 	parseLocal(data) {
@@ -1408,26 +1412,89 @@ class TodoListBuilder {
 		this.lists.push(newList);
 	}
 
-	moveListLeft(list, index) {
-		this.board.insertBefore(list.outer, list.outer.previousSibling);
-
-		this.lists.splice(index, 1);
-		this.lists.splice(--index, 0, list);
+	isEdge(i, direction) {
+		if ((i == 0 && direction == 'left') ||
+			(i == this.lists.length - 1 && direction == 'right')) {
+			return true;
+		}
 	}
 
-	moveListRight(list, index) {
-		this.board.insertBefore(list.outer.nextSibling, list.outer);
+	moveList(i, step, direction) {
+		let list = this.lists[i];
+		let j = 0;
 
-		this.lists.splice(index, 1);
-		this.lists.splice(++index, 0, list);
+		switch(direction) {
+			case 'left':
+				j = i - step;
+				break;
+			case 'right':
+				j = i + step;
+				break;
+			default: return;
+		}
+
+		let slist = this.lists[j];
+
+		if (j > i) {
+			this.board.insertBefore(slist.outer, list.outer);
+		} else {
+			this.board.insertBefore(list.outer, slist.outer);
+		}
+
+		this.lists.splice(i, 1);
+		this.lists.splice(j, 0, list);
 	}
 
-	isFirst(list) {
-		return this.lists.indexOf(list) === 0 ? true : false;
-	}
+	swap(mainIndex, secondaryIndex) {
+		if (mainIndex == secondaryIndex) return;
 
-	isLast(list) {
-		return this.lists.indexOf(list) == this.lists.length - 1 ? true : false;
+		if (secondaryIndex > this.lists.length - 1) secondaryIndex = 0;
+		if (secondaryIndex < 0) secondaryIndex = this.lists.length - 1;
+
+		let over = this.lists[mainIndex].outer;
+		let under = this.lists[secondaryIndex].outer;
+
+		// create clones
+		over.clone = over.cloneNode(true);
+		under.clone = under.cloneNode(true);
+
+		over.clone.addEventListener('transitionend', this.onSwapped.bind(this, over, under));
+
+		// set original positions and sizes
+		this.board.classList.add('scene');
+		over.clone.classList.add('clone');
+		under.clone.classList.add('clone');
+		over.clone.style.top = over.offsetTop + 'px';
+		over.clone.style.left = over.offsetLeft + 'px';
+		over.clone.style.width = over.offsetWidth + 'px';
+		over.clone.style.height = over.offsetHeight + 'px';
+
+		under.clone.style.top = under.offsetTop + 'px';
+		under.clone.style.left = under.offsetLeft + 'px';
+		under.clone.style.width = under.offsetWidth + 'px';
+		under.clone.style.height = under.offsetHeight + 'px';
+
+		// hide originals
+		over.style.visibility = 'hidden';
+		under.style.visibility = 'hidden';
+
+		// show clones
+		this.board.appendChild(over.clone);
+		this.board.appendChild(under.clone);
+
+		// make others know they are starting animation
+		over.clone.classList.add('animate', 'over');
+		under.clone.classList.add('animate', 'under');
+
+		// move clones
+		over.clone.style.top = under.offsetTop + 'px';
+		over.clone.style.left = under.offsetLeft + 'px';
+		under.clone.style.top = over.offsetTop + 'px';
+		under.clone.style.left = over.offsetLeft + 'px';
+
+		let direction = mainIndex - secondaryIndex > 0 ? 'left' : 'right';
+
+		this.moveList(mainIndex, Math.abs(mainIndex - secondaryIndex), direction);
 	}
 
 	updateStorage() {
@@ -1451,6 +1518,8 @@ class TodoListBuilder {
 		localStorage.setItem('todolist', newData);
 		console.log('Storage is updated...');
 	}
+
+	// Events
 
 	initEvents() {
 
@@ -1517,19 +1586,20 @@ class TodoListBuilder {
 			}
 		}
 
-		if ((this.isFirst(movingList) && direction == 'left') ||
-			(this.isLast(movingList) && direction == 'right')) {
-			return;
-		}
+		if (this.isEdge(i, direction)) return;
 
-		switch(direction) {
-			case 'left':
-				this.moveListLeft(movingList, i);
-				break;
-			case 'right':
-				this.moveListRight(movingList, i);
-				break;
-			default: return;
+		if (this.options.moveAnimation) {
+			switch(direction) {
+				case 'left':
+					this.swap(i, i - 1);
+					break;
+				case 'right':
+					this.swap(i, i + 1);
+					break;
+				default: break;
+			}
+		} else {
+			this.moveList(i, 1, direction);
 		}
 
 		this.updateStorage();
@@ -1550,6 +1620,15 @@ class TodoListBuilder {
 		this.updateStorage();
 	}
 
+	onSwapped(over, under) {
+		over.style.visibility = 'visible';
+		under.style.visibility = 'visible';
+
+		over.clone.remove();
+		under.clone.remove();
+
+		this.board.classList.remove('scene');
+	}
 
 }
 /* harmony export (immutable) */ __webpack_exports__["a"] = TodoListBuilder;
